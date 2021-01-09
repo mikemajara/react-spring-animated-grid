@@ -131,16 +131,15 @@ export default function App() {
           gridSize.width
         )
       ]
-      xy.map(e => {
-        if (isNaN(e)){
-          console.log(`i: ${i}`)
-          console.log(`defaultItemWidth: ${defaultItemWidth}`)
-          console.log(`defaultItemHeight: ${defaultItemHeight}`)
-          console.log(`defaultMarginX: ${defaultMarginX}`)
-          console.log(`defaultMarginY: ${defaultMarginY}`)
-          console.log(`gridSize.width: ${gridSize.width}`)
-        }
-      })
+      if (i == 2 && gridSize.width > 100){
+        console.log(`i: ${i}`)
+        console.log(`defaultItemWidth: ${defaultItemWidth}`)
+        console.log(`defaultItemHeight: ${defaultItemHeight}`)
+        console.log(`defaultMarginX: ${defaultMarginX}`)
+        console.log(`defaultMarginY: ${defaultMarginY}`)
+        console.log(`gridSize.width: ${gridSize.width}`)
+        console.log(`x,y: ${xy}`)
+      }
       // console.log({...el, xy})
       return {...el, xy}
     })
@@ -173,9 +172,7 @@ export default function App() {
               key={key}
               className={style.gridItem}
               style={{
-                // top: `${xy[0]}px`,
-                // left: `${xy[1]}px`,
-                transform: xy.interpolate((x, y) => `translate3d(${x}px,${y}px, 0px)`),
+                transform: xy.interpolate((x, y) => `translate3d(${y}px,${x}px, 0px)`),
                 ...rest
               }}
             >
