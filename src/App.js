@@ -44,7 +44,7 @@ export default function App() {
   };
 
 
-  console.log(`gridWidth: ${gridSize.width}`)
+  // console.log(`gridWidth: ${gridSize.width}`)
 
   const elements = [
     {key: "a"}, 
@@ -70,6 +70,7 @@ export default function App() {
       containerWidth,
       print = false
     ) => {
+      if (!containerWidth) return 0
       const leftOffsetRaw = idx * (itemWidth + marginX);
       const topOffset = Math.floor(
         idx / getMaxItemFit(itemWidth, marginX, containerWidth)
@@ -86,9 +87,9 @@ export default function App() {
         console.log(`
           ${itemHeight} * ${topOffset} + ${itemHeight} * ${marginY} =
           ${itemHeight * topOffset + itemHeight * marginY}px`);*/
-        return `${itemHeight * topOffset + marginY * topOffset}px`;
+        return topOffset * (itemHeight + marginY);
       }
-      return `0px`;
+      return 0;
     };
 
     const calculateLeftPx = (
@@ -98,6 +99,7 @@ export default function App() {
       containerWidth,
       print = false
     ) => {
+      if (!containerWidth) return 0
       const leftOffsetRaw = idx * (itemWidth + marginX);
       const maxFit = getMaxItemFit(itemWidth, marginX, containerWidth);
       const adjustedLeftOffset = (idx % maxFit) * (itemWidth + marginX);
@@ -108,8 +110,8 @@ export default function App() {
         console.log(`adjustedLeftOffset = ${adjustedLeftOffset}`);
       }
       return leftOffsetRaw < containerWidth - itemWidth
-        ? `${leftOffsetRaw % containerWidth}px`
-        : `${adjustedLeftOffset}px`;
+        ? leftOffsetRaw % containerWidth
+        : adjustedLeftOffset;
     };
     
     let gridItems = elements.map((el, i) => {
@@ -129,10 +131,20 @@ export default function App() {
           gridSize.width
         )
       ]
-      console.log({...el, xy})
+      xy.map(e => {
+        if (isNaN(e)){
+          console.log(`i: ${i}`)
+          console.log(`defaultItemWidth: ${defaultItemWidth}`)
+          console.log(`defaultItemHeight: ${defaultItemHeight}`)
+          console.log(`defaultMarginX: ${defaultMarginX}`)
+          console.log(`defaultMarginY: ${defaultMarginY}`)
+          console.log(`gridSize.width: ${gridSize.width}`)
+        }
+      })
+      // console.log({...el, xy})
       return {...el, xy}
     })
-    console.log(`passing through useMemo`)
+    // console.log(`passing through useMemo`)
     return gridItems
   }, [gridSize.width, elements])
 
@@ -144,7 +156,7 @@ export default function App() {
     config: { mass: 5, tension: 500, friction: 100 },
   })
 
-  console.log(transitions)
+  //console.log(transitions)
 
   return (
     <div>
@@ -155,15 +167,15 @@ export default function App() {
       >
         {transitions.map((el) => {
             const {item, props: { xy, ...rest }, key} = el;
-            console.log(el)
+            //console.log(el)
             return (
             <animated.div
               key={key}
               className={style.gridItem}
               style={{
-                // top: xy[0],
-                // left: xy[1],
-                transform: xy.interpolate((x, y) => `translate3d(${x},${y},0)`),
+                // top: `${xy[0]}px`,
+                // left: `${xy[1]}px`,
+                transform: xy.interpolate((x, y) => `translate3d(${x}px,${y}px, 0px)`),
                 ...rest
               }}
             >
