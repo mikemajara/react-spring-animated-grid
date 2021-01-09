@@ -114,6 +114,30 @@ export default function App() {
 
   console.log(`gridWidth: ${gridSize.width}`)
 
+
+  const springGenerator = (i) => {
+    const [props, setProps] = useSpring(() => ({
+      top: calculateTopPx(
+        i,
+        defaultItemWidth,
+        defaultItemHeight,
+        defaultMarginX,
+        defaultMarginY,
+        defaultWidth
+      ),
+      left: calculateLeftPx(
+        i,
+        defaultItemWidth,
+        defaultMarginX,
+        defaultWidth
+      ),
+    }));
+    return {props, setProps}
+  };
+
+  const elements = ["a", "b", "c", "d", "e", "f", "g"]
+
+  const propsidupsi = elements.map((e, i) => springGenerator(i))
   
 
   const oldPosition = useRef([{},{},{},{},{},{},{}])
@@ -143,10 +167,21 @@ export default function App() {
       );
       // console.log({top, left})
       savePosition.current[i] = {top, left}
-      return {top, left}
+      if (oldPosition.current[3].left !== savePosition.current[3].left){
+        console.log(`oldPosition`)
+        console.log(oldPosition.current[3].left)
+        console.log(`savePosition`)
+        console.log(savePosition.current[3].left)
+      }
+      return propsidupsi[i].setProps({
+        from: oldPosition.current[i],
+        top, left
+      })
     },
     [gridSize.width],
   );
+
+  
 
   const [styles, setStyles] = useSpring(() => {
     return {
@@ -162,22 +197,12 @@ export default function App() {
         style={expand}
         ref={gridRef}
       >
-        {["a", "b", "c", "d", "e", "f", "g"].map((e, i) => (
+        {elements.map((e, i) => (
           // <Spring>
           <animated.div
             key={i}
             className={style.gridItem}
-            style={{
-              from: oldPosition.current[i],
-              ...newPosition(
-                i,
-                defaultItemWidth,
-                defaultItemHeight,
-                defaultMarginX,
-                defaultMarginY,
-                gridSize.width
-              ),
-            }}
+            style={propsidupsi.props[i]}
             // style={{
             // //   //top: `${i * 20 + i * defaultMargin >= 200 ? 20 : 0}px`,
             //   top: calculateTopPx(
