@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useMeasure } from "react-use";
+import React, { useState, useEffect } from "react";
+import { useMeasure, useSize } from "react-use";
 import { animated, useSpring } from "react-spring";
 import style from "./grid.module.css";
 
@@ -8,7 +8,8 @@ export default function App() {
   const defaultMarginY = 20;
   const defaultItemHeight = 20;
   const defaultItemWidth = 20;
-  const containerWidth = 150;
+  const containerWidth = 170;
+  const halfContainerWidth = containerWidth/2
   const containerHeight = 200;
   const defaultHeight = `${containerHeight}px`;
   const defaultWidth = `${containerWidth}px`;
@@ -19,29 +20,27 @@ export default function App() {
   // The height of the content inside of the accordion
   const [contentWidth, setContentWidth] = useState(defaultWidth);
 
-  const [gridRef, { gridHeight, gridWidth }] = useMeasure();
-  const [itemRef, { itemHeight, itemWidth }] = useMeasure();
+  const [gridRef, gridSize] = useMeasure();
+  const [itemRef, itemSize] = useMeasure();
 
   // Animations
   const expand = useSpring({
-    width: open ? `${contentWidth}px` : defaultWidth
+    width: open ? `${halfContainerWidth}px` : `${containerWidth}px`
   });
   const spin = useSpring({
     transform: open ? "rotate(180deg)" : "rotate(0deg)"
   });
-  console.log(gridHeight, gridWidth);
+  // console.log(gridHeight, gridWidth);
+
+  const handleToggle = () => {
+    toggle(!open)
+  }
 
   // number of items that fit into one row
   // lowerbound calculates min to fit all and margin
   // return checks if we can fit another element without margin
   const getMaxItemFit = (itemWidth, marginX, containerWidth) => {
-    const lowerBound = Math.ceil(
-      (containerWidth - marginX) / (itemWidth + marginX)
-    );
-    return lowerBound;
-    /*return containerWidth - lowerBound * (itemWidth + marginX) >= itemWidth
-      ? lowerBound + 1
-      : lowerBound;*/
+    return Math.ceil((containerWidth - marginX) / (itemWidth + marginX));
   };
 
   const calculateTopPx = (
@@ -95,26 +94,20 @@ export default function App() {
       : `${adjustedLeftOffset}px`;
   };
 
-  [0, 1, 2, 3, 4, 5, 6].map((i) => {
-    console.log(`${i} ->
-    top: ${calculateTopPx(
-      i,
-      defaultItemWidth,
-      defaultItemHeight,
-      defaultMarginX,
-      defaultMarginY,
-      containerWidth,
-      true
-    )}
-    left: ${calculateLeftPx(
-      i,
-      defaultItemWidth,
-      defaultMarginX,
-      containerWidth,
-      true
-    )}
-    `);
-  });
+  console.log(`gridWidth: ${gridSize.width}`)
+
+  // useEffect(() => {
+  //   // console.log(`setContentWidth(${gridSize.width})`)
+
+  //   //Sets initial height
+  //   setContentWidth(gridSize.width);
+  
+  //   //Adds resize event listener
+  //   window.addEventListener("resize", setContentWidth(gridSize.width));
+  
+  //   // Clean-up
+  //   return window.removeEventListener("resize", setContentWidth(gridSize.width));
+  // }, [gridSize.width]);
 
   return (
     <div>
@@ -135,23 +128,23 @@ export default function App() {
                 defaultItemHeight,
                 defaultMarginX,
                 defaultMarginY,
-                containerWidth
+                gridSize.width
               ),
               //left: `${(i * 20 + i * defaultMargin) % 200}px`,
               left: calculateLeftPx(
                 i,
                 defaultItemWidth,
                 defaultMarginX,
-                containerWidth
-              )
+                gridSize.width
+              ),
             }}
           >
             {e}
           </div>
         ))}
       </animated.div>
-      <animated.button onClick={() => toggle(!open)} style={spin}>
-        v
+      <animated.button onClick={handleToggle} style={spin}>
+        {'<'}
       </animated.button>
     </div>
   );

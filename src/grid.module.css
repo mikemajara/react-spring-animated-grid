@@ -7,6 +7,7 @@
 }
 .gridItem {
   border: 1px solid blue;
+  text-align: center;
   position: absolute;
   width: 20px;
   height: 20px;
