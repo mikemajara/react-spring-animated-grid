@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useMeasure, useSize } from "react-use";
-import { animated, useSpring } from "react-spring";
+import { animated, interpolate, useSpring } from "react-spring";
 import style from "./grid.module.css";
+import { Spring } from "react-spring/renderprops";
 
 export default function App() {
   const defaultMarginX = 20;
@@ -36,6 +37,21 @@ export default function App() {
     toggle(!open)
   }
 
+  const [move, setMove] = useState(0)
+
+  const handleMove = () => {
+    setMove( move + 5 )
+    setStyles({
+      x: 10 + move,
+      y: 10 + move
+    })
+    console.log(move)
+  }
+
+  const handleItemClick = (e) => {
+    console.log(e.target)
+  }
+
   // number of items that fit into one row
   // lowerbound calculates min to fit all and margin
   // return checks if we can fit another element without margin
@@ -52,6 +68,7 @@ export default function App() {
     containerWidth,
     print = false
   ) => {
+    if (!containerWidth) return "0px";
     const leftOffsetRaw = idx * (itemWidth + marginX);
     const topOffset = Math.floor(
       idx / getMaxItemFit(itemWidth, marginX, containerWidth)
@@ -80,6 +97,7 @@ export default function App() {
     containerWidth,
     print = false
   ) => {
+    if (!containerWidth) return "0px";
     const leftOffsetRaw = idx * (itemWidth + marginX);
     const maxFit = getMaxItemFit(itemWidth, marginX, containerWidth);
     const adjustedLeftOffset = (idx % maxFit) * (itemWidth + marginX);
@@ -96,19 +114,47 @@ export default function App() {
 
   console.log(`gridWidth: ${gridSize.width}`)
 
-  // useEffect(() => {
-  //   // console.log(`setContentWidth(${gridSize.width})`)
-
-  //   //Sets initial height
-  //   setContentWidth(gridSize.width);
   
-  //   //Adds resize event listener
-  //   window.addEventListener("resize", setContentWidth(gridSize.width));
-  
-  //   // Clean-up
-  //   return window.removeEventListener("resize", setContentWidth(gridSize.width));
-  // }, [gridSize.width]);
 
+  const oldPosition = useRef([{},{},{},{},{},{},{}])
+  const savePosition = useRef([{},{},{},{},{},{},{}])
+  const newPosition = useCallback(
+    ( i,
+      defaultItemWidth,
+      defaultItemHeight,
+      defaultMarginX,
+      defaultMarginY,
+      gridSizeWidth
+    ) => {
+      oldPosition.current[i] = Object.assign({}, savePosition.current[i])
+      const top = calculateTopPx(
+        i,
+        defaultItemWidth,
+        defaultItemHeight,
+        defaultMarginX,
+        defaultMarginY,
+        gridSizeWidth
+      );
+      const left = calculateLeftPx(
+        i,
+        defaultItemWidth,
+        defaultMarginX,
+        gridSizeWidth
+      );
+      // console.log({top, left})
+      savePosition.current[i] = {top, left}
+      return {top, left}
+    },
+    [gridSize.width],
+  );
+
+  const [styles, setStyles] = useSpring(() => {
+    return {
+      x: 10 + move,
+      y: 10 + move
+    }
+  })
+  
   return (
     <div>
       <animated.div
@@ -117,12 +163,13 @@ export default function App() {
         ref={gridRef}
       >
         {["a", "b", "c", "d", "e", "f", "g"].map((e, i) => (
-          <div
+          // <Spring>
+          <animated.div
             key={i}
             className={style.gridItem}
             style={{
-              //top: `${i * 20 + i * defaultMargin >= 200 ? 20 : 0}px`,
-              top: calculateTopPx(
+              from: oldPosition.current[i],
+              ...newPosition(
                 i,
                 defaultItemWidth,
                 defaultItemHeight,
@@ -130,21 +177,41 @@ export default function App() {
                 defaultMarginY,
                 gridSize.width
               ),
-              //left: `${(i * 20 + i * defaultMargin) % 200}px`,
-              left: calculateLeftPx(
-                i,
-                defaultItemWidth,
-                defaultMarginX,
-                gridSize.width
-              ),
             }}
+            // style={{
+            // //   //top: `${i * 20 + i * defaultMargin >= 200 ? 20 : 0}px`,
+            //   top: calculateTopPx(
+            //     i,
+            //     defaultItemWidth,
+            //     defaultItemHeight,
+            //     defaultMarginX,
+            //     defaultMarginY,
+            //     gridSize.width
+            //   ),
+            // //   //left: `${(i * 20 + i * defaultMargin) % 200}px`,
+            //   left: calculateLeftPx(
+            //     i,
+            //     defaultItemWidth,
+            //     defaultMarginX,
+            //     gridSize.width
+            //   ),
+            // //   transform: interpolate(
+            // //     [styles.x, styles.y],
+            // //     (x, y) => `translate3d(${x}px, ${y}px, 0)`
+            // //   )
+            // }}
+            onClick={handleItemClick}
           >
             {e}
-          </div>
+          </animated.div>
+          // </Spring>
         ))}
       </animated.div>
       <animated.button onClick={handleToggle} style={spin}>
         {'<'}
+      </animated.button>
+      <animated.button onClick={handleMove}>
+        {'move'}
       </animated.button>
     </div>
   );
