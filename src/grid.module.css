@@ -1,0 +1,16 @@
+.gridContainer {
+  border: 1px solid tomato;
+  overflow: hidden;
+  width: 200px;
+  height: 100px;
+  position: relative;
+}
+.gridItem {
+  border: 1px solid blue;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+}
+.expand {
+  width: 230px;
+}
