@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useMeasure, useSize } from "react-use";
-import { animated, useSpring } from "react-spring";
+import { animated, useSpring, useTransition } from "react-spring";
 import style from "./grid.module.css";
 
 export default function App() {
@@ -43,71 +43,108 @@ export default function App() {
     return Math.ceil((containerWidth - marginX) / (itemWidth + marginX));
   };
 
-  const calculateTopPx = (
-    idx,
-    itemWidth,
-    itemHeight,
-    marginX,
-    marginY,
-    containerWidth,
-    print = false
-  ) => {
-    const leftOffsetRaw = idx * (itemWidth + marginX);
-    const topOffset = Math.floor(
-      idx / getMaxItemFit(itemWidth, marginX, containerWidth)
-    );
-
-    if (print)
-      console.log(
-        `topOffset: ${leftOffsetRaw}/(${containerWidth}-${itemWidth}) = ${
-          leftOffsetRaw / (containerWidth - itemWidth)
-        }`
-      );
-    if (topOffset) {
-      /*console.log(`calculating offset for idx: ${idx}`);
-      console.log(`
-        ${itemHeight} * ${topOffset} + ${itemHeight} * ${marginY} =
-        ${itemHeight * topOffset + itemHeight * marginY}px`);*/
-      return `${itemHeight * topOffset + marginY * topOffset}px`;
-    }
-    return `0px`;
-  };
-
-  const calculateLeftPx = (
-    idx,
-    itemWidth,
-    marginX,
-    containerWidth,
-    print = false
-  ) => {
-    const leftOffsetRaw = idx * (itemWidth + marginX);
-    const maxFit = getMaxItemFit(itemWidth, marginX, containerWidth);
-    const adjustedLeftOffset = (idx % maxFit) * (itemWidth + marginX);
-    if (print) {
-      console.log(`idx = ${idx}`);
-      console.log(`leftOffsetRaw = ${leftOffsetRaw}`);
-      console.log(`maxFit = ${maxFit}`);
-      console.log(`adjustedLeftOffset = ${adjustedLeftOffset}`);
-    }
-    return leftOffsetRaw < containerWidth - itemWidth
-      ? `${leftOffsetRaw % containerWidth}px`
-      : `${adjustedLeftOffset}px`;
-  };
 
   console.log(`gridWidth: ${gridSize.width}`)
 
-  // useEffect(() => {
-  //   // console.log(`setContentWidth(${gridSize.width})`)
+  const elements = [
+    {key: "a"}, 
+    {key: "b"}, 
+    {key: "c"}, 
+    {key: "d"}, 
+    {key: "e"}, 
+    {key: "f"}, 
+    {key: "g"}
+  ]
 
-  //   //Sets initial height
-  //   setContentWidth(gridSize.width);
   
-  //   //Adds resize event listener
-  //   window.addEventListener("resize", setContentWidth(gridSize.width));
-  
-  //   // Clean-up
-  //   return window.removeEventListener("resize", setContentWidth(gridSize.width));
-  // }, [gridSize.width]);
+
+  const gridItems = useMemo(() => {
+    
+
+    const calculateTopPx = (
+      idx,
+      itemWidth,
+      itemHeight,
+      marginX,
+      marginY,
+      containerWidth,
+      print = false
+    ) => {
+      const leftOffsetRaw = idx * (itemWidth + marginX);
+      const topOffset = Math.floor(
+        idx / getMaxItemFit(itemWidth, marginX, containerWidth)
+      );
+
+      if (print)
+        console.log(
+          `topOffset: ${leftOffsetRaw}/(${containerWidth}-${itemWidth}) = ${
+            leftOffsetRaw / (containerWidth - itemWidth)
+          }`
+        );
+      if (topOffset) {
+        /*console.log(`calculating offset for idx: ${idx}`);
+        console.log(`
+          ${itemHeight} * ${topOffset} + ${itemHeight} * ${marginY} =
+          ${itemHeight * topOffset + itemHeight * marginY}px`);*/
+        return `${itemHeight * topOffset + marginY * topOffset}px`;
+      }
+      return `0px`;
+    };
+
+    const calculateLeftPx = (
+      idx,
+      itemWidth,
+      marginX,
+      containerWidth,
+      print = false
+    ) => {
+      const leftOffsetRaw = idx * (itemWidth + marginX);
+      const maxFit = getMaxItemFit(itemWidth, marginX, containerWidth);
+      const adjustedLeftOffset = (idx % maxFit) * (itemWidth + marginX);
+      if (print) {
+        console.log(`idx = ${idx}`);
+        console.log(`leftOffsetRaw = ${leftOffsetRaw}`);
+        console.log(`maxFit = ${maxFit}`);
+        console.log(`adjustedLeftOffset = ${adjustedLeftOffset}`);
+      }
+      return leftOffsetRaw < containerWidth - itemWidth
+        ? `${leftOffsetRaw % containerWidth}px`
+        : `${adjustedLeftOffset}px`;
+    };
+    
+    let gridItems = elements.map((el, i) => {
+      const xy = [
+        calculateTopPx(
+          i,
+          defaultItemWidth,
+          defaultItemHeight,
+          defaultMarginX,
+          defaultMarginY,
+          gridSize.width
+        ),
+        calculateLeftPx(
+          i,
+          defaultItemWidth,
+          defaultMarginX,
+          gridSize.width
+        )
+      ]
+      console.log({...el, xy})
+      return {...el, xy}
+    })
+    console.log(`passing through useMemo`)
+    return gridItems
+  }, [gridSize.width, elements])
+
+
+  const transitions = useTransition(gridItems, el => el.key, {
+    from: ({xy}) => ({xy, opacity: 0}),
+    enter: ({xy}) => ({xy, opacity: 1}),
+    update: ({xy}) => ({xy}),
+    config: { mass: 5, tension: 500, friction: 100 },
+  })
+
+  console.log(transitions)
 
   return (
     <div>
@@ -116,32 +153,23 @@ export default function App() {
         style={expand}
         ref={gridRef}
       >
-        {["a", "b", "c", "d", "e", "f", "g"].map((e, i) => (
-          <div
-            key={i}
-            className={style.gridItem}
-            style={{
-              //top: `${i * 20 + i * defaultMargin >= 200 ? 20 : 0}px`,
-              top: calculateTopPx(
-                i,
-                defaultItemWidth,
-                defaultItemHeight,
-                defaultMarginX,
-                defaultMarginY,
-                gridSize.width
-              ),
-              //left: `${(i * 20 + i * defaultMargin) % 200}px`,
-              left: calculateLeftPx(
-                i,
-                defaultItemWidth,
-                defaultMarginX,
-                gridSize.width
-              ),
-            }}
-          >
-            {e}
-          </div>
-        ))}
+        {transitions.map((el) => {
+            const {item, props: { xy, ...rest }, key} = el;
+            console.log(el)
+            return (
+            <animated.div
+              key={key}
+              className={style.gridItem}
+              style={{
+                // top: xy[0],
+                // left: xy[1],
+                transform: xy.interpolate((x, y) => `translate3d(${x},${y},0)`),
+                ...rest
+              }}
+            >
+              {item.key}
+            </animated.div>)
+          })}
       </animated.div>
       <animated.button onClick={handleToggle} style={spin}>
         {'<'}
