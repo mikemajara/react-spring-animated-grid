@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useMeasure, useSize } from "react-use";
-import { animated, useSpring, useTransition } from "react-spring";
+import { animated, interpolate, useSpring, useTransition } from "react-spring";
 import style from "./grid.module.css";
 
 export default function App() {
@@ -18,19 +18,18 @@ export default function App() {
   const [open, toggle] = useState(false);
 
   // The height of the content inside of the accordion
-  const [contentWidth, setContentWidth] = useState(defaultWidth);
+  const [contentWidth, setContentWidth] = useState(containerWidth);
 
   const [gridRef, gridSize] = useMeasure();
   const [itemRef, itemSize] = useMeasure();
 
   // Animations
-  const expand = useSpring({
-    width: open ? `${halfContainerWidth}px` : `${containerWidth}px`
-  });
+  // const expand = useSpring({
+  //   width: `${contentWidth}px`
+  // });
   const spin = useSpring({
     transform: open ? "rotate(180deg)" : "rotate(0deg)"
   });
-  // console.log(gridHeight, gridWidth);
 
   const handleToggle = () => {
     toggle(!open)
@@ -56,8 +55,8 @@ export default function App() {
     {key: "g"}
   ]
 
+  const [clicked, setClicked] = useState([])
   
-
   const gridItems = useMemo(() => {
     
 
@@ -115,6 +114,7 @@ export default function App() {
     };
     
     let gridItems = elements.map((el, i) => {
+      console.log(el)
       const xy = [
         calculateTopPx(
           i,
@@ -131,49 +131,54 @@ export default function App() {
           gridSize.width
         )
       ]
-      if (i == 2 && gridSize.width > 100){
-        console.log(`i: ${i}`)
-        console.log(`defaultItemWidth: ${defaultItemWidth}`)
-        console.log(`defaultItemHeight: ${defaultItemHeight}`)
-        console.log(`defaultMarginX: ${defaultMarginX}`)
-        console.log(`defaultMarginY: ${defaultMarginY}`)
-        console.log(`gridSize.width: ${gridSize.width}`)
-        console.log(`x,y: ${xy}`)
-      }
+      const w = clicked.includes(el.key) ? 50 : 20
       // console.log({...el, xy})
-      return {...el, xy}
+      return {...el, xy, w}
     })
     // console.log(`passing through useMemo`)
     return gridItems
-  }, [gridSize.width, elements])
+  }, [gridSize.width, elements, clicked])
+
 
 
   const transitions = useTransition(gridItems, el => el.key, {
-    from: ({xy}) => ({xy, opacity: 0}),
-    enter: ({xy}) => ({xy, opacity: 1}),
-    update: ({xy}) => ({xy}),
+    from: ({xy, w}) => ({xy, w, opacity: 0}),
+    enter: ({xy, w}) => ({xy, w, opacity: 1}),
+    update: ({xy, w}) => ({xy, w}),
     config: { mass: 5, tension: 500, friction: 100 },
   })
 
-  //console.log(transitions)
+  console.log(transitions)
 
   return (
     <div>
       <animated.div
         className={style.gridContainer}
-        style={expand}
+        style={{width: contentWidth}}
         ref={gridRef}
       >
         {transitions.map((el) => {
-            const {item, props: { xy, ...rest }, key} = el;
-            //console.log(el)
+            const {item, props: { xy, w, ...rest }, key} = el;
+            console.log(w)
             return (
             <animated.div
               key={key}
               className={style.gridItem}
               style={{
+                width: w,//.interpolate(x => `scaleY(${x}px)`),
                 transform: xy.interpolate((x, y) => `translate3d(${y}px,${x}px, 0px)`),
                 ...rest
+              }}
+              onClick={() => {
+                if (clicked.includes(item.key)){
+                  setClicked(clicked.filter(e => e !== item.key))
+                }else{
+                  setClicked([...clicked, item.key])
+                }
+                // const el = elements.find(e => e.key == item.key)
+                // elements[0].clicked = !elements[0].clicked
+                // // elements[elements.findIndex(e => e.key == item.key)].clicked = !el.clicked
+                // setAnyClicked(elements.some(e => e.clicked))
               }}
             >
               {item.key}
@@ -183,6 +188,14 @@ export default function App() {
       <animated.button onClick={handleToggle} style={spin}>
         {'<'}
       </animated.button>
+      
+      <animated.button onClick={() => setContentWidth(contentWidth+2)} style={spin}>
+        {'+'}
+      </animated.button>
+      <animated.button onClick={() => setContentWidth(contentWidth-2)} style={spin}>
+        {'-'}
+      </animated.button>
+
     </div>
   );
 }
