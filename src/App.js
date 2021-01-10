@@ -65,6 +65,10 @@ export default function App() {
       return Math.ceil((containerWidth - marginX) / (itemWidth + marginX));
     };
 
+    const getPreviousItemsWidth = (idx) => elements
+        .slice(0,idx)
+        .reduce((acc, el) => acc + el.measure[1].width, 0)
+
     const calculateTopPx = (
       idx,
       itemWidth,
@@ -75,17 +79,22 @@ export default function App() {
       print = false
     ) => {
       if (!containerWidth) return 0
-      const leftOffsetRaw = idx * (itemWidth + marginX);
-      const topOffset = Math.floor(
-        idx / getMaxItemFit(itemWidth, marginX, containerWidth)
-      );
 
-      if (print)
-        console.log(
-          `topOffset: ${leftOffsetRaw}/(${containerWidth}-${itemWidth}) = ${
-            leftOffsetRaw / (containerWidth - itemWidth)
-          }`
-        );
+      getPreviousItemsWidth(idx)
+
+      const leftOffsetRaw = getPreviousItemsWidth(idx) + idx * marginX;
+      const topOffset = Math.floor(leftOffsetRaw/(containerWidth-marginX))
+      // const topOffset = Math.floor(
+      //   idx / getMaxItemFit(itemWidth, marginX, containerWidth)
+      // );
+
+      if (print){
+        console.log(`%cidx = ${idx}, element: ${elements[idx].key}`, 'font-weight:bold');
+        console.log(`previousItemsWidth = ${getPreviousItemsWidth(idx)}`);
+        console.log(`leftOffsetRaw = ${leftOffsetRaw}`);
+        console.log(`topOffset = ${topOffset}`);
+        console.log(`containerWidth = ${containerWidth}`);
+      }
       if (topOffset) {
         /*console.log(`calculating offset for idx: ${idx}`);
         console.log(`
@@ -109,16 +118,16 @@ export default function App() {
         .slice(0,idx)
         .reduce((acc, el) => acc + el.measure[1].width, 0)
 
-      const leftOffsetRaw = previousItemsWidth + idx * marginX;
-      const maxFit = getMaxItemFit(previousItemsWidth, marginX, containerWidth);
+      const leftOffsetRaw = getPreviousItemsWidth(idx) + idx * marginX;
+      const maxFit = getMaxItemFit(getPreviousItemsWidth(idx), marginX, containerWidth);
       // in how many rows of length (containerWidth - marginX) can I fit
       // all the previous boxes
-      const topOffset = Math.ceil((containerWidth-marginX)/leftOffsetRaw)
+      const topOffset = Math.floor(leftOffsetRaw/(containerWidth-marginX))
       const adjustedLeftOffset = leftOffsetRaw%containerWidth
       // const adjustedLeftOffset = (idx % topOffset) * leftOffsetRaw;
       if (print) {
         console.log(`%cidx = ${idx}, element: ${elements[idx].key}`, 'font-weight:bold');
-        console.log(`previousItemsWidth = ${previousItemsWidth}`);
+        console.log(`previousItemsWidth = ${getPreviousItemsWidth(idx)}`);
         console.log(`leftOffsetRaw = ${leftOffsetRaw}`);
         console.log(`maxFit = ${maxFit}`);
         console.log(`topOffset = ${topOffset}`);
@@ -139,14 +148,15 @@ export default function App() {
           defaultItemHeight,
           defaultMarginX,
           defaultMarginY,
-          gridSize.width
+          gridSize.width,
+          true
         ),
         calculateLeftPx(
           i,
           defaultItemWidth,
           defaultMarginX,
           gridSize.width,
-          true
+          
         )
       ]
       const w = clicked.includes(el.key) ? 50 : 20
