@@ -6,7 +6,7 @@
   position: relative;
 }
 .gridItem {
-  border: 1px solid blue;
+  border: 1px solid black;
   text-align: center;
   position: absolute;
   width: 20px;

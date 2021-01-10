@@ -37,13 +37,13 @@ export default function App() {
   const mock = () => [1,2]
 
   const elements = [
-    { key: "a", measure: useMeasure() }, 
-    { key: "b", measure: useMeasure() }, 
-    { key: "c", measure: useMeasure() }, 
-    { key: "d", measure: useMeasure() }, 
-    { key: "e", measure: useMeasure() }, 
-    { key: "f", measure: useMeasure() }, 
-    { key: "g", measure: useMeasure() }
+    { key: "a", bgcolor: "cyan", measure: useMeasure() }, 
+    { key: "b", bgcolor: "yellow", measure: useMeasure() }, 
+    { key: "c", bgcolor: "magenta", measure: useMeasure() }, 
+    { key: "d", bgcolor: "cyan", measure: useMeasure() }, 
+    { key: "e", bgcolor: "yellow", measure: useMeasure() }, 
+    { key: "f", bgcolor: "magenta", measure: useMeasure() }, 
+    { key: "g", bgcolor: "cyan", measure: useMeasure() }
   ]
   // eslint-disable-line react-hooks/rules-of-hooks
   // elements.map((_, i) => {[elements[i].ref, elements[i].size] = useMeasure()})
@@ -109,17 +109,24 @@ export default function App() {
         .slice(0,idx)
         .reduce((acc, el) => acc + el.measure[1].width, 0)
 
-      const leftOffsetRaw = idx * (previousItemsWidth + marginX);
-      const maxFit = getMaxItemFit(itemWidth, marginX, containerWidth);
-      // const topOffset = Math.ceil((containerWidth-margin)/(previousItemsWidth+marginX))
-      const adjustedLeftOffset = (idx % maxFit) * (itemWidth + marginX);
+      const leftOffsetRaw = previousItemsWidth + idx * marginX;
+      const maxFit = getMaxItemFit(previousItemsWidth, marginX, containerWidth);
+      // in how many rows of length (containerWidth - marginX) can I fit
+      // all the previous boxes
+      const topOffset = Math.ceil((containerWidth-marginX)/leftOffsetRaw)
+      const adjustedLeftOffset = leftOffsetRaw%containerWidth
+      // const adjustedLeftOffset = (idx % topOffset) * leftOffsetRaw;
       if (print) {
-        console.log(`idx = ${idx}`);
+        console.log(`%cidx = ${idx}, element: ${elements[idx].key}`, 'font-weight:bold');
+        console.log(`previousItemsWidth = ${previousItemsWidth}`);
         console.log(`leftOffsetRaw = ${leftOffsetRaw}`);
         console.log(`maxFit = ${maxFit}`);
+        console.log(`topOffset = ${topOffset}`);
         console.log(`adjustedLeftOffset = ${adjustedLeftOffset}`);
+        console.log(`containerWidth = ${containerWidth}`);
       }
-      return leftOffsetRaw < containerWidth - previousItemsWidth
+      // FIXME -> return just one adjustedOffset
+      return leftOffsetRaw < containerWidth - marginX
         ? leftOffsetRaw % containerWidth
         : adjustedLeftOffset;
     };
@@ -154,7 +161,7 @@ export default function App() {
 
   const transitions = useTransition(gridItems, el => el.key, {
     from: ({xy, w}) => ({xy, w, opacity: 0}),
-    enter: ({xy, w}) => ({xy, w, opacity: 1}),
+    enter: ({xy, w}) => ({xy, w, opacity: .5}),
     update: ({xy, w}) => ({xy, w}),
     config: { mass: 5, tension: 500, friction: 100 },
   })
@@ -175,6 +182,8 @@ export default function App() {
               key={key}
               className={style.gridItem}
               style={{
+                backgroundColor: item.bgcolor,
+                opacity: 0.7,
                 width: w,//.interpolate(x => `scaleY(${x}px)`),
                 transform: xy.interpolate((x, y) => `translate3d(${y}px,${x}px, 0px)`),
                 ...rest
