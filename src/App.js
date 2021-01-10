@@ -21,7 +21,6 @@ export default function App() {
   const [contentWidth, setContentWidth] = useState(containerWidth);
 
   const [gridRef, gridSize] = useMeasure();
-  const [itemRef, itemSize] = useMeasure();
 
   // Animations
   // const expand = useSpring({
@@ -31,34 +30,40 @@ export default function App() {
     transform: open ? "rotate(180deg)" : "rotate(0deg)"
   });
 
-  const handleToggle = () => {
-    toggle(!open)
+  const toggleContentWidth = (factor) => {
+    if (factor === 0) return
+    setContentWidth(contentWidth*factor)
   }
-
-  // number of items that fit into one row
-  // lowerbound calculates min to fit all and margin
-  // return checks if we can fit another element without margin
-  const getMaxItemFit = (itemWidth, marginX, containerWidth) => {
-    return Math.ceil((containerWidth - marginX) / (itemWidth + marginX));
-  };
-
-
-  // console.log(`gridWidth: ${gridSize.width}`)
+  const mock = () => [1,2]
 
   const elements = [
-    {key: "a"}, 
-    {key: "b"}, 
-    {key: "c"}, 
-    {key: "d"}, 
-    {key: "e"}, 
-    {key: "f"}, 
-    {key: "g"}
+    { key: "a", measure: useMeasure() }, 
+    { key: "b", measure: useMeasure() }, 
+    { key: "c", measure: useMeasure() }, 
+    { key: "d", measure: useMeasure() }, 
+    { key: "e", measure: useMeasure() }, 
+    { key: "f", measure: useMeasure() }, 
+    { key: "g", measure: useMeasure() }
   ]
+  // eslint-disable-line react-hooks/rules-of-hooks
+  // elements.map((_, i) => {[elements[i].ref, elements[i].size] = useMeasure()})
+  // for (var i = 0; i< elements.length; i++){
+  //   [elements[i].ref, elements[i].size] = useMeasure()
+  //   console.log(elements[i])
+  // }
+  console.log(elements)
+    // elements.forEach(e => {e.ref, e.size = useMeasure()})
 
   const [clicked, setClicked] = useState([])
   
   const gridItems = useMemo(() => {
     
+    // number of items that fit into one row
+    // lowerbound calculates min to fit all and margin
+    // return checks if we can fit another element without margin
+    const getMaxItemFit = (itemWidth, marginX, containerWidth) => {
+      return Math.ceil((containerWidth - marginX) / (itemWidth + marginX));
+    };
 
     const calculateTopPx = (
       idx,
@@ -99,8 +104,14 @@ export default function App() {
       print = false
     ) => {
       if (!containerWidth) return 0
-      const leftOffsetRaw = idx * (itemWidth + marginX);
+
+      const previousItemsWidth = elements
+        .slice(0,idx)
+        .reduce((acc, el) => acc + el.measure[1].width, 0)
+
+      const leftOffsetRaw = idx * (previousItemsWidth + marginX);
       const maxFit = getMaxItemFit(itemWidth, marginX, containerWidth);
+      // const topOffset = Math.ceil((containerWidth-margin)/(previousItemsWidth+marginX))
       const adjustedLeftOffset = (idx % maxFit) * (itemWidth + marginX);
       if (print) {
         console.log(`idx = ${idx}`);
@@ -108,13 +119,12 @@ export default function App() {
         console.log(`maxFit = ${maxFit}`);
         console.log(`adjustedLeftOffset = ${adjustedLeftOffset}`);
       }
-      return leftOffsetRaw < containerWidth - itemWidth
+      return leftOffsetRaw < containerWidth - previousItemsWidth
         ? leftOffsetRaw % containerWidth
         : adjustedLeftOffset;
     };
     
     let gridItems = elements.map((el, i) => {
-      console.log(el)
       const xy = [
         calculateTopPx(
           i,
@@ -128,7 +138,8 @@ export default function App() {
           i,
           defaultItemWidth,
           defaultMarginX,
-          gridSize.width
+          gridSize.width,
+          true
         )
       ]
       const w = clicked.includes(el.key) ? 50 : 20
@@ -148,7 +159,7 @@ export default function App() {
     config: { mass: 5, tension: 500, friction: 100 },
   })
 
-  console.log(transitions)
+  // console.log(transitions)
 
   return (
     <div>
@@ -159,7 +170,6 @@ export default function App() {
       >
         {transitions.map((el) => {
             const {item, props: { xy, w, ...rest }, key} = el;
-            console.log(w)
             return (
             <animated.div
               key={key}
@@ -169,6 +179,7 @@ export default function App() {
                 transform: xy.interpolate((x, y) => `translate3d(${y}px,${x}px, 0px)`),
                 ...rest
               }}
+              ref={item.measure[0]}
               onClick={() => {
                 if (clicked.includes(item.key)){
                   setClicked(clicked.filter(e => e !== item.key))
@@ -185,8 +196,11 @@ export default function App() {
             </animated.div>)
           })}
       </animated.div>
-      <animated.button onClick={handleToggle} style={spin}>
+      <animated.button onClick={() => toggleContentWidth(1/2)} style={spin}>
         {'<'}
+      </animated.button>
+      <animated.button onClick={() => toggleContentWidth(2)} style={spin}>
+        {'>'}
       </animated.button>
       
       <animated.button onClick={() => setContentWidth(contentWidth+2)} style={spin}>
