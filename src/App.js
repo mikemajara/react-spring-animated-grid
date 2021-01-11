@@ -9,9 +9,9 @@ export default function App() {
   const defaultMarginY = 20;
   const defaultItemHeight = 20;
   const defaultItemWidth = 20;
-  const containerWidth = 170;
+  const containerWidth = 130;
   const halfContainerWidth = containerWidth/2
-  const containerHeight = 200;
+  const containerHeight = 400;
   const defaultHeight = `${containerHeight}px`;
   const defaultWidth = `${containerWidth}px`;
 
@@ -59,6 +59,12 @@ export default function App() {
   
   const gridItems = useMemo(() => {
 
+    const getItemWidth = (idx) => {
+      if (elements[idx])
+        return elements[idx].measure[1].width
+      return 0
+    }
+
     const getItemsWidth = (from, to) => 
       from !== to 
         ? elements
@@ -70,8 +76,13 @@ export default function App() {
     
     const getLeftOffsetRaw = (idx, marginX) => getPreviousItemsWidth(idx) + idx * marginX;
     
-    const getTopOffsetRaw = (idx, marginX, containerWidth) => 
-      Math.floor(getLeftOffsetRaw(idx, marginX)/(containerWidth-marginX))
+    const getTopOffsetRaw = (idx, marginX, containerWidth) => {
+      const leftRaw = getLeftOffsetRaw(idx, marginX)
+      let offset = Math.floor((leftRaw+getItemWidth(idx))/containerWidth)
+      // if (isLastInRow)
+      //   offset = Math.floor((leftRaw+getItemWidth(idx))/(containerWidth-marginX))
+      return offset
+    }
 
     const getPreviousItemsInRow = (idx, marginX, containerWidth) => {
       let currentItem = idx-1
@@ -84,14 +95,15 @@ export default function App() {
         currentItem = currentItem -1
         currentOffset = getTopOffsetRaw(currentItem, marginX, containerWidth)
       }
-      console.log(`idx ${idx} - row offset: ${topOffsetRaw}, elements: ${elementsInRow}`)
+      console.log(`getPreviousItemsInRow(${idx}, ${marginX}, ${containerWidth}) = ${elementsInRow}`)
       return elementsInRow
     }
 
     const getPreviousItemsWidthForRow = (idx, marginX, containerWidth) => {
-      const firstItemInRow = getPreviousItemsInRow(idx, marginX, containerWidth)[0] || idx
+      const previousItems = getPreviousItemsInRow(idx, marginX, containerWidth)
+      const firstItemInRow = previousItems.length ? previousItems[0] : idx
       const width = getItemsWidth(firstItemInRow, idx)
-      console.log(`idx ${idx} - width: ${width}`)
+      console.log(`getItemsWidth(${firstItemInRow}, ${idx}) = ${width}`)
       return width
     }
 
@@ -139,18 +151,16 @@ export default function App() {
       const leftOffsetRaw = getLeftOffsetRaw(idx, marginX);
       const topOffsetRaw = getTopOffsetRaw(idx, marginX, containerWidth)
 
-      
       // in how many rows of length (containerWidth - marginX) can I fit
       // all the previous boxes
-      let adjustedLeftOffset = leftOffsetRaw%(containerWidth - marginX)
-      if (adjustedLeftOffset < marginX) adjustedLeftOffset = 0
-      adjustedLeftOffset = 
+      const adjustedLeftOffset = 
         getPreviousItemsWidthForRow(idx, marginX, containerWidth) + 
         getPreviousItemsInRow(idx, marginX, containerWidth).length * marginX
 
       // const adjustedLeftOffset = (idx % topOffset) * leftOffsetRaw;
       if (print) {
         console.log(`%cidx = ${idx}, element: ${elements[idx].key}`, 'font-weight:bold');
+        console.log(`itemWidth = ${getItemWidth(idx)}`);
         console.log(`leftOffsetRaw = ${leftOffsetRaw}`);
         console.log(`topOffsetRaw = ${topOffsetRaw}`);
         console.log(`previousItemsWidth = ${getPreviousItemsWidth(idx)}`);
