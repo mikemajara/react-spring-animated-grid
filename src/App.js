@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useMeasure, useSize } from "react-use";
-import { animated, interpolate, useSpring } from "react-spring";
+import { animated, interpolate, useSpring, useTransition } from "react-spring";
 import style from "./grid.module.css";
 import { Spring } from "react-spring/renderprops";
 
@@ -19,169 +19,188 @@ export default function App() {
   const [open, toggle] = useState(false);
 
   // The height of the content inside of the accordion
-  const [contentWidth, setContentWidth] = useState(defaultWidth);
+  const [contentWidth, setContentWidth] = useState(containerWidth);
 
   const [gridRef, gridSize] = useMeasure();
-  const [itemRef, itemSize] = useMeasure();
 
   // Animations
-  const expand = useSpring({
-    width: open ? `${halfContainerWidth}px` : `${containerWidth}px`
-  });
+  // const expand = useSpring({
+  //   width: `${contentWidth}px`
+  // });
   const spin = useSpring({
     transform: open ? "rotate(180deg)" : "rotate(0deg)"
   });
-  // console.log(gridHeight, gridWidth);
 
-  const handleToggle = () => {
-    toggle(!open)
+  const toggleContentWidth = (factor) => {
+    if (factor === 0) return
+    setContentWidth(contentWidth*factor)
   }
+  const mock = () => [1,2]
 
-  const [move, setMove] = useState(0)
+  const elements = [
+    { key: "a", bgcolor: "cyan", measure: useMeasure() }, 
+    { key: "b", bgcolor: "yellow", measure: useMeasure() }, 
+    { key: "c", bgcolor: "magenta", measure: useMeasure() }, 
+    { key: "d", bgcolor: "cyan", measure: useMeasure() }, 
+    { key: "e", bgcolor: "yellow", measure: useMeasure() }, 
+    { key: "f", bgcolor: "magenta", measure: useMeasure() }, 
+    { key: "g", bgcolor: "cyan", measure: useMeasure() }
+  ]
+  // eslint-disable-line react-hooks/rules-of-hooks
+  // elements.map((_, i) => {[elements[i].ref, elements[i].size] = useMeasure()})
+  // for (var i = 0; i< elements.length; i++){
+  //   [elements[i].ref, elements[i].size] = useMeasure()
+  //   console.log(elements[i])
+  // }
+  console.log(elements)
+    // elements.forEach(e => {e.ref, e.size = useMeasure()})
 
-  const handleMove = () => {
-    setMove( move + 5 )
-    setStyles({
-      x: 10 + move,
-      y: 10 + move
-    })
-    console.log(move)
-  }
-
-  const handleItemClick = (e) => {
-    console.log(e.target)
-  }
-
-  // number of items that fit into one row
-  // lowerbound calculates min to fit all and margin
-  // return checks if we can fit another element without margin
-  const getMaxItemFit = (itemWidth, marginX, containerWidth) => {
-    return Math.ceil((containerWidth - marginX) / (itemWidth + marginX));
-  };
-
-  const calculateTopPx = (
-    idx,
-    itemWidth,
-    itemHeight,
-    marginX,
-    marginY,
-    containerWidth,
-    print = false
-  ) => {
-    if (!containerWidth) return "0px";
-    const leftOffsetRaw = idx * (itemWidth + marginX);
-    const topOffset = Math.floor(
-      idx / getMaxItemFit(itemWidth, marginX, containerWidth)
-    );
-
-    if (print)
-      console.log(
-        `topOffset: ${leftOffsetRaw}/(${containerWidth}-${itemWidth}) = ${
-          leftOffsetRaw / (containerWidth - itemWidth)
-        }`
-      );
-    if (topOffset) {
-      /*console.log(`calculating offset for idx: ${idx}`);
-      console.log(`
-        ${itemHeight} * ${topOffset} + ${itemHeight} * ${marginY} =
-        ${itemHeight * topOffset + itemHeight * marginY}px`);*/
-      return `${itemHeight * topOffset + marginY * topOffset}px`;
-    }
-    return `0px`;
-  };
-
-  const calculateLeftPx = (
-    idx,
-    itemWidth,
-    marginX,
-    containerWidth,
-    print = false
-  ) => {
-    if (!containerWidth) return "0px";
-    const leftOffsetRaw = idx * (itemWidth + marginX);
-    const maxFit = getMaxItemFit(itemWidth, marginX, containerWidth);
-    const adjustedLeftOffset = (idx % maxFit) * (itemWidth + marginX);
-    if (print) {
-      console.log(`idx = ${idx}`);
-      console.log(`leftOffsetRaw = ${leftOffsetRaw}`);
-      console.log(`maxFit = ${maxFit}`);
-      console.log(`adjustedLeftOffset = ${adjustedLeftOffset}`);
-    }
-    return leftOffsetRaw < containerWidth - itemWidth
-      ? `${leftOffsetRaw % containerWidth}px`
-      : `${adjustedLeftOffset}px`;
-  };
-
-  console.log(`gridWidth: ${gridSize.width}`)
-
-
-  const springGenerator = (i) => {
-    const [props, setProps] = useSpring(() => ({
-      top: calculateTopPx(
-        i,
-        defaultItemWidth,
-        defaultItemHeight,
-        defaultMarginX,
-        defaultMarginY,
-        defaultWidth
-      ),
-      left: calculateLeftPx(
-        i,
-        defaultItemWidth,
-        defaultMarginX,
-        defaultWidth
-      ),
-    }));
-    return {props, setProps}
-  };
-
-  const elements = ["a", "b", "c", "d", "e", "f", "g"]
-
-  const propsidupsi = elements.map((e, i) => springGenerator(i))
+  const [clicked, setClicked] = useState([])
   
+  const gridItems = useMemo(() => {
 
-  const oldPosition = useRef([{},{},{},{},{},{},{}])
-  const savePosition = useRef([{},{},{},{},{},{},{}])
-  const newPosition = useCallback(
-    ( i,
-      defaultItemWidth,
-      defaultItemHeight,
-      defaultMarginX,
-      defaultMarginY,
-      gridSizeWidth
-    ) => {
-      oldPosition.current[i] = Object.assign({}, savePosition.current[i])
-      const top = calculateTopPx(
-        i,
-        defaultItemWidth,
-        defaultItemHeight,
-        defaultMarginX,
-        defaultMarginY,
-        gridSizeWidth
-      );
-      const left = calculateLeftPx(
-        i,
-        defaultItemWidth,
-        defaultMarginX,
-        gridSizeWidth
-      );
-      // console.log({top, left})
-      savePosition.current[i] = {top, left}
-      if (oldPosition.current[3].left !== savePosition.current[3].left){
-        console.log(`oldPosition`)
-        console.log(oldPosition.current[3].left)
-        console.log(`savePosition`)
-        console.log(savePosition.current[3].left)
+    const getItemsWidth = (from, to) => 
+      from !== to 
+        ? elements
+        .slice(from, to)
+        .reduce((acc, el) => acc + el.measure[1].width, 0)
+        : 0
+
+    const getPreviousItemsWidth = (idx) => getItemsWidth(0, idx)
+    
+    const getLeftOffsetRaw = (idx, marginX) => getPreviousItemsWidth(idx) + idx * marginX;
+    
+    const getTopOffsetRaw = (idx, marginX, containerWidth) => 
+      Math.floor(getLeftOffsetRaw(idx, marginX)/(containerWidth-marginX))
+
+    const getPreviousItemsInRow = (idx, marginX, containerWidth) => {
+      let currentItem = idx-1
+      let elementsInRow = []
+      const topOffsetRaw = getTopOffsetRaw(idx, marginX, containerWidth)
+      let currentOffset = getTopOffsetRaw(currentItem, marginX, containerWidth)
+      while(currentItem >= 0 && currentOffset == topOffsetRaw){
+        elementsInRow.unshift(currentItem)
+        // console.log(`currentOffset: ${currentOffset}, currentItem: ${currentItem}, elementsInRow: ${elementsInRow}`)
+        currentItem = currentItem -1
+        currentOffset = getTopOffsetRaw(currentItem, marginX, containerWidth)
       }
-      return propsidupsi[i].setProps({
-        from: oldPosition.current[i],
-        top, left
-      })
-    },
-    [gridSize.width],
-  );
+      console.log(`idx ${idx} - row offset: ${topOffsetRaw}, elements: ${elementsInRow}`)
+      return elementsInRow
+    }
 
-  
+    const getPreviousItemsWidthForRow = (idx, marginX, containerWidth) => {
+      const firstItemInRow = getPreviousItemsInRow(idx, marginX, containerWidth)[0] || idx
+      const width = getItemsWidth(firstItemInRow, idx)
+      console.log(`idx ${idx} - width: ${width}`)
+      return width
+    }
+
+    const calculateTopPx = (
+      idx,
+      itemWidth,
+      itemHeight,
+      marginX,
+      marginY,
+      containerWidth,
+      print = false
+    ) => {
+      if (!containerWidth) return 0
+
+      const leftOffsetRaw = getLeftOffsetRaw(idx, marginX);
+      const topOffsetRaw = getTopOffsetRaw(idx, marginX, containerWidth);
+
+      if (print){
+        console.log(`%cidx = ${idx}, element: ${elements[idx].key}`, 'font-weight:bold');
+        getPreviousItemsWidthForRow(idx, marginX, containerWidth)
+        // console.log(`previousItemsWidth = ${getPreviousItemsWidth(idx)}`);
+        // console.log(`leftOffsetRaw = ${leftOffsetRaw}`);
+        // console.log(`topOffsetRaw = ${topOffsetRaw}`);
+        // console.log(`containerWidth = ${containerWidth}`);
+      }
+      if (topOffsetRaw) {
+        /*console.log(`calculating offset for idx: ${idx}`);
+        console.log(`
+          ${itemHeight} * ${topOffset} + ${itemHeight} * ${marginY} =
+          ${itemHeight * topOffset + itemHeight * marginY}px`);*/
+        return topOffsetRaw * (itemHeight + marginY);
+      }
+      return 0;
+    };
+
+    const calculateLeftPx = (
+      idx,
+      itemWidth,
+      marginX,
+      containerWidth,
+      print = false
+    ) => {
+      if (!containerWidth) return 0
+
+      const leftOffsetRaw = getLeftOffsetRaw(idx, marginX);
+      const topOffsetRaw = getTopOffsetRaw(idx, marginX, containerWidth)
+
+      
+      // in how many rows of length (containerWidth - marginX) can I fit
+      // all the previous boxes
+      let adjustedLeftOffset = leftOffsetRaw%(containerWidth - marginX)
+      if (adjustedLeftOffset < marginX) adjustedLeftOffset = 0
+      adjustedLeftOffset = 
+        getPreviousItemsWidthForRow(idx, marginX, containerWidth) + 
+        getPreviousItemsInRow(idx, marginX, containerWidth).length * marginX
+
+      // const adjustedLeftOffset = (idx % topOffset) * leftOffsetRaw;
+      if (print) {
+        console.log(`%cidx = ${idx}, element: ${elements[idx].key}`, 'font-weight:bold');
+        console.log(`leftOffsetRaw = ${leftOffsetRaw}`);
+        console.log(`topOffsetRaw = ${topOffsetRaw}`);
+        console.log(`previousItemsWidth = ${getPreviousItemsWidth(idx)}`);
+        console.log(`previousItemsWidthForRow = ${getPreviousItemsWidthForRow(idx, marginX, containerWidth)}`);
+        console.log(`previousItemsInRow = ${getPreviousItemsInRow(idx, marginX, containerWidth)}`);
+        console.log(`adjustedLeftOffset = ${adjustedLeftOffset}`);
+        console.log(`containerWidth = ${containerWidth}`);
+      }
+      // FIXME -> return just one adjustedOffset
+      return leftOffsetRaw < containerWidth - marginX
+        ? leftOffsetRaw % containerWidth
+        : adjustedLeftOffset;
+    };
+    
+    let gridItems = elements.map((el, i) => {
+      const xy = [
+        calculateTopPx(
+          i,
+          defaultItemWidth,
+          defaultItemHeight,
+          defaultMarginX,
+          defaultMarginY,
+          gridSize.width,
+        ),
+        calculateLeftPx(
+          i,
+          defaultItemWidth,
+          defaultMarginX,
+          gridSize.width,
+          true
+        )
+      ]
+      const w = clicked.includes(el.key) ? 50 : 20
+      // console.log({...el, xy})
+      return {...el, xy, w}
+    })
+    // console.log(`passing through useMemo`)
+    return gridItems
+  }, [gridSize.width, elements, clicked])
+
+
+
+  const transitions = useTransition(gridItems, el => el.key, {
+    from: ({xy, w}) => ({xy, w, opacity: 0}),
+    enter: ({xy, w}) => ({xy, w, opacity: .5}),
+    update: ({xy, w}) => ({xy, w}),
+    config: { mass: 5, tension: 500, friction: 100 },
+  })
+
+  // console.log(transitions)
 
   const [styles, setStyles] = useSpring(() => {
     return {
@@ -194,50 +213,53 @@ export default function App() {
     <div>
       <animated.div
         className={style.gridContainer}
-        style={expand}
+        style={{width: contentWidth}}
         ref={gridRef}
       >
-        {elements.map((e, i) => (
-          // <Spring>
-          <animated.div
-            key={i}
-            className={style.gridItem}
-            style={propsidupsi.props[i]}
-            // style={{
-            // //   //top: `${i * 20 + i * defaultMargin >= 200 ? 20 : 0}px`,
-            //   top: calculateTopPx(
-            //     i,
-            //     defaultItemWidth,
-            //     defaultItemHeight,
-            //     defaultMarginX,
-            //     defaultMarginY,
-            //     gridSize.width
-            //   ),
-            // //   //left: `${(i * 20 + i * defaultMargin) % 200}px`,
-            //   left: calculateLeftPx(
-            //     i,
-            //     defaultItemWidth,
-            //     defaultMarginX,
-            //     gridSize.width
-            //   ),
-            // //   transform: interpolate(
-            // //     [styles.x, styles.y],
-            // //     (x, y) => `translate3d(${x}px, ${y}px, 0)`
-            // //   )
-            // }}
-            onClick={handleItemClick}
-          >
-            {e}
-          </animated.div>
-          // </Spring>
-        ))}
+        {transitions.map((el) => {
+            const {item, props: { xy, w, ...rest }, key} = el;
+            return (
+            <animated.div
+              key={key}
+              className={style.gridItem}
+              style={{
+                backgroundColor: item.bgcolor,
+                opacity: 0.7,
+                width: w,//.interpolate(x => `scaleY(${x}px)`),
+                transform: xy.interpolate((x, y) => `translate3d(${y}px,${x}px, 0px)`),
+                ...rest
+              }}
+              ref={item.measure[0]}
+              onClick={() => {
+                if (clicked.includes(item.key)){
+                  setClicked(clicked.filter(e => e !== item.key))
+                }else{
+                  setClicked([...clicked, item.key])
+                }
+                // const el = elements.find(e => e.key == item.key)
+                // elements[0].clicked = !elements[0].clicked
+                // // elements[elements.findIndex(e => e.key == item.key)].clicked = !el.clicked
+                // setAnyClicked(elements.some(e => e.clicked))
+              }}
+            >
+              {item.key}
+            </animated.div>)
+          })}
       </animated.div>
-      <animated.button onClick={handleToggle} style={spin}>
+      <animated.button onClick={() => toggleContentWidth(1/2)} style={spin}>
         {'<'}
       </animated.button>
-      <animated.button onClick={handleMove}>
-        {'move'}
+      <animated.button onClick={() => toggleContentWidth(2)} style={spin}>
+        {'>'}
       </animated.button>
+      
+      <animated.button onClick={() => setContentWidth(contentWidth+2)} style={spin}>
+        {'+'}
+      </animated.button>
+      <animated.button onClick={() => setContentWidth(contentWidth-2)} style={spin}>
+        {'-'}
+      </animated.button>
+
     </div>
   );
 }
