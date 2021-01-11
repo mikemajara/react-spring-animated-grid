@@ -114,10 +114,6 @@ export default function App() {
     ) => {
       if (!containerWidth) return 0
 
-      const previousItemsWidth = elements
-        .slice(0,idx)
-        .reduce((acc, el) => acc + el.measure[1].width, 0)
-
       const leftOffsetRaw = getPreviousItemsWidth(idx) + idx * marginX;
       const maxFit = getMaxItemFit(getPreviousItemsWidth(idx), marginX, containerWidth);
       // in how many rows of length (containerWidth - marginX) can I fit
