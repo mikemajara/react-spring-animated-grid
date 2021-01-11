@@ -200,14 +200,6 @@ export default function App() {
     config: { mass: 5, tension: 500, friction: 100 },
   })
 
-  // console.log(transitions)
-
-  const [styles, setStyles] = useSpring(() => {
-    return {
-      x: 10 + move,
-      y: 10 + move
-    }
-  })
   
   return (
     <div>
