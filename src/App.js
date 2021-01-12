@@ -185,6 +185,12 @@ export default function App() {
       // all the previous boxes
       let adjustedLeftOffset = 
         getPreviousItemsWidthForRow(idx,  containerWidth)
+
+      const iw = getItemWidth(idx)
+
+      // if (containerwidth < (adjustedLeftOffset + iw)){
+      //   left
+      // }
         
 
       // const adjustedLeftOffset = (idx % topOffset) * leftOffsetRaw;
@@ -200,9 +206,9 @@ export default function App() {
         // console.log(`containerWidth = ${containerWidth}`);
       }
       // FIXME -> return just one adjustedOffset
-      adjustedLeftOffset = (adjustedLeftOffset + getItemWidth(idx)) < containerWidth
-        ? leftOffsetRaw % containerWidth
-        : adjustedLeftOffset;
+      // adjustedLeftOffset = (adjustedLeftOffset + getItemWidth(idx)) < containerWidth
+      //   ? leftOffsetRaw % containerWidth
+      //   : adjustedLeftOffset;
 
       return [leftOffsetRaw, adjustedLeftOffset];
     };
