@@ -135,34 +135,40 @@ export default function App() {
       containerWidth,
       print = false
     ) => {
-      if (!containerWidth) return 0
+      if (!containerWidth) return [0,0]
 
       const leftOffsetRaw = getLeftOffsetRaw(idx);
       const topOffsetRaw = getTopOffsetRaw(idx, containerWidth);
 
-      if (containerWidth < (getPreviousItemsWidthForRow(idx, containerWidth) + getItemWidth(idx))){
+      const piwfr = getPreviousItemsWidthForRow(idx, containerWidth)
+      const iw = getItemWidth(idx)
+
+      if (containerWidth < (piwfr + iw)){
         console.log('%cADDING 1', 'font-weight: bold; color: red')
+      }else{
+        console.log(`containerWidth < (getPreviousItemsWidthForRow(idx, containerWidth) + getItemWidth(idx))`)
+        console.log(`${containerWidth} < (${piwfr} + ${iw})`);
       }
 
       let adjustedTopOffset = 
-        containerWidth < (getPreviousItemsWidthForRow(idx, containerWidth) + getItemWidth(idx))
+        containerWidth < (piwfr + iw)
         ? topOffsetRaw + 1
         : topOffsetRaw
 
       adjustedTopOffset = adjustedTopOffset
-        ? topOffsetRaw * (itemHeight + marginY)
+        ? adjustedTopOffset * (itemHeight + marginY)
         : 0
 
       if (print){
         console.log(`%ccalculateTopPx - idx = ${idx}, element: ${elements[idx].key}`, 'font-weight:bold');
-        console.log(`getPreviousItemsWidthForRow(${idx}, ${containerWidth}) = ${getPreviousItemsWidthForRow(idx, containerWidth)}`)
+        console.log(`getPreviousItemsWidthForRow(${idx}, ${containerWidth}) = ${piwfr}`)
         // console.log(`previousItemsWidth = ${getPreviousItemsWidth(idx)}`);
         // console.log(`leftOffsetRaw = ${leftOffsetRaw}`);
         // console.log(`topOffsetRaw = ${topOffsetRaw}`);
         // console.log(`containerWidth = ${containerWidth}`);
       }
       
-      return adjustedTopOffset;
+      return [topOffsetRaw, adjustedTopOffset];
     };
 
     const calculateLeftPx = (
@@ -170,14 +176,14 @@ export default function App() {
       containerWidth,
       print = false
     ) => {
-      if (!containerWidth) return 0
+      if (!containerWidth) return [0,0]
 
       const leftOffsetRaw = getLeftOffsetRaw(idx);
       const topOffsetRaw = getTopOffsetRaw(idx,  containerWidth)
 
       // in how many rows of length (containerWidth - marginX) can I fit
       // all the previous boxes
-      const adjustedLeftOffset = 
+      let adjustedLeftOffset = 
         getPreviousItemsWidthForRow(idx,  containerWidth)
         
 
@@ -194,13 +200,15 @@ export default function App() {
         // console.log(`containerWidth = ${containerWidth}`);
       }
       // FIXME -> return just one adjustedOffset
-      return (leftOffsetRaw + getItemWidth(idx)) < containerWidth
+      adjustedLeftOffset = (adjustedLeftOffset + getItemWidth(idx)) < containerWidth
         ? leftOffsetRaw % containerWidth
         : adjustedLeftOffset;
+
+      return [leftOffsetRaw, adjustedLeftOffset];
     };
     
     let gridItems = elements.map((el, i) => {
-      const top = 
+      const [topRaw, top] = 
         calculateTopPx(
           i,
           defaultItemHeight,
@@ -208,19 +216,20 @@ export default function App() {
           gridSize.width,
           true
         );
-      const left =
+      const [leftRaw, left] =
         calculateLeftPx(
           i,
           gridSize.width,
           true
         );
+      console.log(`containerWidth: ${gridSize.width}`)
       const xy = [
         top,
         left
       ]
       updatePosition(i, 
-        getTopOffsetRaw(i, containerWidth),
-        getLeftOffsetRaw(i),
+        topRaw,
+        leftRaw,// getLeftOffsetRaw(i),
         top, left)
       const w = clicked.includes(el.key) ? 50 : 20
       // console.log({...el, xy})
