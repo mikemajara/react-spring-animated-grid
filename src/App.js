@@ -8,7 +8,7 @@ export default function App() {
   const defaultMarginY = 20;
   const defaultItemHeight = 20;
   const defaultItemWidth = 20;
-  const containerWidth = 54;
+  const containerWidth = 120;
   const halfContainerWidth = containerWidth/2
   const containerHeight = 400;
   const defaultHeight = `${containerHeight}px`;
@@ -95,28 +95,30 @@ export default function App() {
       return offset
     }
 
+    const getAdjustedTopOffsetRaw = (idx) => positions.current[idx].topRaw
+
     const getPreviousItemsInRow = (idx, containerWidth) => {
       let currentItem = idx-1
       let elementsInRow = []
-      const topOffsetRaw = getTopOffsetRaw(idx, containerWidth)
-      console.log(`filtering out in getPreviousItemsInRow(${idx}, ${containerWidth}) - `)
-      console.log(`positions.current:`)
-      console.log(positions.current)
+      const adjustedTopOffsetRaw = getAdjustedTopOffsetRaw(idx)
+      // console.log(`filtering out in getPreviousItemsInRow(${idx}, ${containerWidth}) - `)
+      // console.log(`positions.current:`)
+      // console.log(positions.current)
       positions.current
         .slice(0,idx)
-        .forEach(({topRaw}, i) => {if (topRaw === topOffsetRaw) elementsInRow.push(i)})
-      console.log(`returning:`)
-      console.log(elementsInRow)
+        .forEach(({topRaw}, i) => {if (topRaw === adjustedTopOffsetRaw) elementsInRow.push(i)})
+      // console.log(`returning:`)
+      // console.log(elementsInRow)
       return elementsInRow
-      let currentOffset = getTopOffsetRaw(currentItem, containerWidth)
-      while(currentItem >= 0 && currentOffset == topOffsetRaw){
-        elementsInRow.unshift(currentItem)
-        // console.log(`currentOffset: ${currentOffset}, currentItem: ${currentItem}, elementsInRow: ${elementsInRow}`)
-        currentItem = currentItem -1
-        currentOffset = getTopOffsetRaw(currentItem, containerWidth)
-      }
-      console.log(`getPreviousItemsInRow(${idx}, ${containerWidth}) = ${elementsInRow}`)
-      return elementsInRow
+      // let currentOffset = getTopOffsetRaw(currentItem, containerWidth)
+      // while(currentItem >= 0 && currentOffset == topOffsetRaw){
+      //   elementsInRow.unshift(currentItem)
+      //   // console.log(`currentOffset: ${currentOffset}, currentItem: ${currentItem}, elementsInRow: ${elementsInRow}`)
+      //   currentItem = currentItem -1
+      //   currentOffset = getTopOffsetRaw(currentItem, containerWidth)
+      // }
+      // console.log(`getPreviousItemsInRow(${idx}, ${containerWidth}) = ${elementsInRow}`)
+      // return elementsInRow
     }
 
     const getPreviousItemsWidthForRow = (idx, containerWidth) => {
@@ -138,25 +140,17 @@ export default function App() {
       if (!containerWidth) return [0,0]
 
       const leftOffsetRaw = getLeftOffsetRaw(idx);
-      const topOffsetRaw = getTopOffsetRaw(idx, containerWidth);
+      let topOffsetRaw = getTopOffsetRaw(idx, containerWidth);
 
       const piwfr = getPreviousItemsWidthForRow(idx, containerWidth)
       const iw = getItemWidth(idx)
 
       if (containerWidth < (piwfr + iw)){
-        console.log('%cADDING 1', 'font-weight: bold; color: red')
-      }else{
-        console.log(`containerWidth < (getPreviousItemsWidthForRow(idx, containerWidth) + getItemWidth(idx))`)
-        console.log(`${containerWidth} < (${piwfr} + ${iw})`);
+        topOffsetRaw++
       }
 
-      let adjustedTopOffset = 
-        containerWidth < (piwfr + iw)
-        ? topOffsetRaw + 1
-        : topOffsetRaw
-
-      adjustedTopOffset = adjustedTopOffset
-        ? adjustedTopOffset * (itemHeight + marginY)
+      const adjustedTopOffset = topOffsetRaw
+        ? topOffsetRaw * (itemHeight + marginY)
         : 0
 
       if (print){
@@ -178,13 +172,18 @@ export default function App() {
     ) => {
       if (!containerWidth) return [0,0]
 
+      if (print) console.log(`%ccalculateLeftPx - idx = ${idx}, element: ${elements[idx].key}`, 'font-weight:bold');
+
+
       const leftOffsetRaw = getLeftOffsetRaw(idx);
-      const topOffsetRaw = getTopOffsetRaw(idx,  containerWidth)
+      // const topOffsetRaw = getTopOffsetRaw(idx,  containerWidth)
+      const adjustedTopOffsetRaw = getAdjustedTopOffsetRaw(idx)
 
       // in how many rows of length (containerWidth - marginX) can I fit
       // all the previous boxes
-      let adjustedLeftOffset = 
+      let piwfr = 
         getPreviousItemsWidthForRow(idx,  containerWidth)
+      let adjustedLeftOffset = piwfr
 
       const iw = getItemWidth(idx)
 
@@ -195,12 +194,11 @@ export default function App() {
 
       // const adjustedLeftOffset = (idx % topOffset) * leftOffsetRaw;
       if (print) {
-        console.log(`%ccalculateLeftPx - idx = ${idx}, element: ${elements[idx].key}`, 'font-weight:bold');
         // console.log(`itemWidth = ${getItemWidth(idx)}`);
         // console.log(`leftOffsetRaw = ${leftOffsetRaw}`);
-        // console.log(`topOffsetRaw = ${topOffsetRaw}`);
+        console.log(`adjustedTopOffsetRaw = ${adjustedTopOffsetRaw}`);
         // console.log(`previousItemsWidth = ${getPreviousItemsWidth(idx)}`);
-        // // console.log(`previousItemsWidthForRow = ${getPreviousItemsWidthForRow(idx, containerWidth)}`);
+        console.log(`previousItemsWidthForRow = ${piwfr}`);
         // // console.log(`previousItemsInRow = ${getPreviousItemsInRow(idx, containerWidth)}`);
         // console.log(`adjustedLeftOffset = ${adjustedLeftOffset}`);
         // console.log(`containerWidth = ${containerWidth}`);
@@ -220,7 +218,7 @@ export default function App() {
           defaultItemHeight,
           defaultMarginY,
           gridSize.width,
-          true
+          // true
         );
       const [leftRaw, left] =
         calculateLeftPx(
