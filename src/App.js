@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useMeasure, useSize } from "react-use";
 import { animated, interpolate, useSpring, useTransition } from "react-spring";
 import style from "./grid.module.css";
@@ -10,7 +10,7 @@ export default function App() {
   const defaultItemWidth = 20;
   const containerWidth = 120;
   const halfContainerWidth = containerWidth/2
-  const containerHeight = 400;
+  const containerHeight = 300;
   const defaultHeight = `${containerHeight}px`;
   const defaultWidth = `${containerWidth}px`;
 
@@ -57,6 +57,7 @@ export default function App() {
   const [clicked, setClicked] = useState([])
 
   const positions = useRef(Array.from(elements).fill({}))
+  const gridItems = useRef([])
 
   const updatePosition = (idx, topRaw, leftRaw, top, left) => {
     if (idx === 0){
@@ -66,7 +67,7 @@ export default function App() {
     }
   }
   
-  const gridItems = useMemo(() => {
+  useEffect(() => {
 
     const getItemWidth = (idx) => {
       if (elements[idx])
@@ -211,7 +212,7 @@ export default function App() {
       return [leftOffsetRaw, adjustedLeftOffset];
     };
     
-    let gridItems = elements.map((el, i) => {
+    let gridItemsCalcs = elements.map((el, i) => {
       const [topRaw, top] = 
         calculateTopPx(
           i,
@@ -240,12 +241,12 @@ export default function App() {
       return {...el, xy, w}
     })
     // console.log(`passing through useMemo`)
-    return gridItems
+    gridItems.current = gridItemsCalcs
   }, [gridSize.width, elements, clicked])
 
 
 
-  const transitions = useTransition(gridItems, el => el.key, {
+  const transitions = useTransition(gridItems.current, el => el.key, {
     from: ({xy, w}) => ({xy, w, opacity: 0}),
     enter: ({xy, w}) => ({xy, w, opacity: .5}),
     update: ({xy, w}) => ({xy, w}),
@@ -304,7 +305,28 @@ export default function App() {
       <animated.button onClick={() => setContentWidth(contentWidth-2)} style={spin}>
         {'-'}
       </animated.button>
-
+      <div>
+          <table>
+              <thead>
+                <th>el</th>
+                <th>topRaw</th>
+                <th>leftRaw</th>
+                <th>top</th>
+                <th>left</th>
+              </thead>
+              <tbody>
+              {positions.current.map(({topRaw, leftRaw, top, left}, i) =>
+                <tr>
+                  <td>{elements[i].key}</td>
+                  <td>{topRaw}</td>
+                  <td>{leftRaw}</td>
+                  <td>{top}</td>
+                  <td>{left}</td>
+                </tr>
+              )}
+              </tbody>
+          </table>
+      </div> 
     </div>
   );
 }
