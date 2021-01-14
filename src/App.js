@@ -1,34 +1,34 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
-import { useMeasure, useSize } from "react-use";
-import { animated, interpolate, useSpring, useTransition } from "react-spring";
+import React, { useState, useRef, useMemo } from "react";
+import { useMeasure } from "react-use";
+import { animated, useTransition } from "react-spring";
 import style from "./grid.module.css";
 
 export default function App() {
-  const defaultMarginX = 20;
-  const defaultMarginY = 20;
+  // const defaultMarginX = 20;
+  // const defaultMarginY = 20;
   const defaultItemHeight = 20;
-  const defaultItemWidth = 20;
+  // const defaultItemWidth = 20;
   const containerWidth = 120;
-  const halfContainerWidth = containerWidth/2
-  const containerHeight = 300;
-  const defaultHeight = `${containerHeight}px`;
-  const defaultWidth = `${containerWidth}px`;
+  // const halfContainerWidth = containerWidth/2
+  // const containerHeight = 300;
+  // const defaultHeight = `${containerHeight}px`;
+  // const defaultWidth = `${containerWidth}px`;
 
   // Manages the open or cloased state of the accordion
-  const [open, toggle] = useState(false);
+  // const [open, toggle] = useState(false);
 
   // The height of the content inside of the accordion
   const [contentWidth, setContentWidth] = useState(containerWidth);
 
-  const [gridRef, gridSize] = useMeasure();
+  // const [gridRef, gridSize] = useMeasure();
 
   // Animations
   // const expand = useSpring({
   //   width: `${contentWidth}px`
   // });
-  const spin = useSpring({
-    transform: open ? "rotate(180deg)" : "rotate(0deg)"
-  });
+  // const spin = useSpring({
+  //   transform: open ? "rotate(180deg)" : "rotate(0deg)"
+  // });
 
   const toggleContentWidth = (factor) => {
     if (factor === 0) return
@@ -143,41 +143,45 @@ export default function App() {
   
   const newPositions = useRef(Array.from(elements).fill({}))
 
-  const getItemWidth = (idx) => {
-    if (elements[idx])
-      return elements[idx].measure[1].width
-    return 0
-  }
-
-  const calculateLayout = (elements, marginTop, marginRight, marginBottom, marginLeft, containerWidth) => {
-    
-    let currentRow = 0
-    let currentTopOffset = 0
-    let currentLeftOffset = 0
-    let spaceRemainingX = containerWidth
-    
-    const nextRow = () => {
-      currentRow += 1
-      currentTopOffset += defaultItemHeight // TODO adjust to variable height
-      currentLeftOffset = 0
-      spaceRemainingX = containerWidth
-    }
-    
-    elements.forEach((e, i) => {
-      const necessarySpaceX = marginLeft + getItemWidth(i) + marginRight
-      while (spaceRemainingX <= necessarySpaceX && containerWidth > getItemWidth(i)){
-        nextRow()
-      }
-      // console.log(`updating ${i}: row - ${currentRow}, top - ${currentTopOffset + marginTop}, left - ${currentLeftOffset + marginLeft}`)
-      newPositions.current[i] = 
-        { row: currentRow, top: currentTopOffset + marginTop, left: currentLeftOffset + marginLeft }
-      // console.log(newPositions)
-      spaceRemainingX -= necessarySpaceX
-      currentLeftOffset += necessarySpaceX
-    })
-  }
   
   const gridItems = useMemo(() => {
+
+    const getItemWidth = (idx) => {
+      if (elements[idx])
+        return elements[idx].measure[1].width
+      return 0
+    }
+
+    const calculateLayout = (elements, marginTop, marginRight, marginBottom, marginLeft, containerWidth) => {
+      // let t0 = performance.now()
+      let currentRow = 0
+      let currentTopOffset = 0
+      let currentLeftOffset = 0
+      let spaceRemainingX = containerWidth
+      
+      const nextRow = () => {
+        currentRow += 1
+        currentTopOffset += defaultItemHeight // TODO adjust to variable height
+        currentLeftOffset = 0
+        spaceRemainingX = containerWidth
+      }
+      
+      elements.forEach((e, i) => {
+        const necessarySpaceX = marginLeft + getItemWidth(i) + marginRight
+        while (spaceRemainingX <= necessarySpaceX && containerWidth > getItemWidth(i)){
+          nextRow()
+        }
+        // console.log(`updating ${i}: row - ${currentRow}, top - ${currentTopOffset + marginTop}, left - ${currentLeftOffset + marginLeft}`)
+        newPositions.current[i] = 
+          { row: currentRow, top: currentTopOffset + marginTop, left: currentLeftOffset + marginLeft }
+        // console.log(newPositions)
+        spaceRemainingX -= necessarySpaceX
+        currentLeftOffset += necessarySpaceX
+      })
+      // let t1 = performance.now()
+      // console.log(`Call to calculateLayout took ${t1 - t0} milliseconds.`)
+    }
+
     calculateLayout(elements, 0, 0, 20, 0, contentWidth)
     
     let gridItemsCalcs = elements.map((el, i) => {
@@ -192,7 +196,7 @@ export default function App() {
     })
     // console.log(`passing through useMemo`)
     return gridItemsCalcs
-  }, [gridSize.width, elements, clicked])
+  }, [contentWidth, elements, clicked])
 
 
 
@@ -200,7 +204,7 @@ export default function App() {
     from: ({xy, w}) => ({xy, w, opacity: 0}),
     enter: ({xy, w}) => ({xy, w, opacity: .5}),
     update: ({xy, w}) => ({xy, w}),
-    config: { mass: 5, tension: 500, friction: 100 },
+    config: { mass: 5, tension: 700, friction: 200 },
   })
 
   // console.log(oldPositions.current)
@@ -210,19 +214,23 @@ export default function App() {
       <animated.div
         className={style.gridContainer}
         style={{width: contentWidth}}
-        ref={gridRef}
+        key={1}
+        // ref={gridRef}
       >
         {transitions.map((el) => {
             const {item, props: { xy, w, ...rest }, key} = el;
+            // console.log(key)
             return (
             <animated.div
-              key={key}
+              key={item.key}
               className={style.gridItem}
               style={{
                 backgroundColor: item.bgcolor,
                 opacity: 0.7,
                 width: w,//.interpolate(x => `scaleY(${x}px)`),
-                transform: xy.interpolate((x, y) => `translate3d(${y}px,${x}px, 0px)`),
+                // transform: xy.interpolate((x, y) => `translate3d(${y}px,${x}px, 0px)`),
+                top: xy.interpolate((x, y) => `${x}px`),
+                left: xy.interpolate((x, y) => `${y}px`),
                 ...rest
               }}
               ref={item.measure[0]}
@@ -238,17 +246,17 @@ export default function App() {
             </animated.div>)
           })}
       </animated.div>
-      <animated.button onClick={() => toggleContentWidth(1/2)} style={spin}>
+      <animated.button onClick={() => toggleContentWidth(1/2)} >
         {'<'}
       </animated.button>
-      <animated.button onClick={() => toggleContentWidth(2)} style={spin}>
+      <animated.button onClick={() => toggleContentWidth(2)} >
         {'>'}
       </animated.button>
       
-      <animated.button onClick={() => setContentWidth(contentWidth+2)} style={spin}>
+      <animated.button onClick={() => setContentWidth(contentWidth+2)} >
         {'+'}
       </animated.button>
-      <animated.button onClick={() => setContentWidth(contentWidth-2)} style={spin}>
+      <animated.button onClick={() => setContentWidth(contentWidth-2)} >
         {'-'}
       </animated.button>
       <div style={{display: "flex", flexDirection: "row"}}>
@@ -256,15 +264,17 @@ export default function App() {
           New calc - containerWidth: {contentWidth}
             <table>
                 <thead>
-                  <th>el</th>
-                  <th>row</th>
-                  {/* <th>leftRaw</th> */}
-                  <th>top</th>
-                  <th>left</th>
+                  <tr>
+                    <th>el</th>
+                    <th>row</th>
+                    {/* <th>leftRaw</th> */}
+                    <th>top</th>
+                    <th>left</th>
+                  </tr>
                 </thead>
                 <tbody>
                 {newPositions.current.map(({row, top, left}, i) =>
-                  <tr>
+                  <tr key={i}>
                     <td>{elements[i].key}</td>
                     <td>{row}</td>
                     {/* <td>{leftRaw}</td> */}
