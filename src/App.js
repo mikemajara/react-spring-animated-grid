@@ -34,41 +34,122 @@ export default function App() {
     if (factor === 0) return
     setContentWidth(contentWidth*factor)
   }
-  const mock = () => [1,2]
-
-  const elements = [
-    { key: "a", bgcolor: "cyan", measure: useMeasure() }, 
-    { key: "b", bgcolor: "yellow", measure: useMeasure() }, 
-    { key: "c", bgcolor: "magenta", measure: useMeasure() }, 
-    { key: "d", bgcolor: "cyan", measure: useMeasure() }, 
-    { key: "e", bgcolor: "yellow", measure: useMeasure() }, 
-    { key: "f", bgcolor: "magenta", measure: useMeasure() }, 
-    { key: "g", bgcolor: "cyan", measure: useMeasure() }
-  ]
-  // eslint-disable-line react-hooks/rules-of-hooks
-  // elements.map((_, i) => {[elements[i].ref, elements[i].size] = useMeasure()})
-  // for (var i = 0; i< elements.length; i++){
-  //   [elements[i].ref, elements[i].size] = useMeasure()
-  //   console.log(elements[i])
-  // }
-  console.log(elements)
-    // elements.forEach(e => {e.ref, e.size = useMeasure()})
 
   const [clicked, setClicked] = useState([])
 
-  const positions = useRef(Array.from(elements).fill({}))
+  
+  
+  const elements = [
+    { key: "1", bgcolor: "cyan", measure: useMeasure() }, 
+    { key: "2", bgcolor: "yellow", measure: useMeasure() }, 
+    { key: "3", bgcolor: "magenta", measure: useMeasure() }, 
+    { key: "4", bgcolor: "cyan", measure: useMeasure() }, 
+    { key: "5", bgcolor: "yellow", measure: useMeasure() }, 
+    { key: "6", bgcolor: "magenta", measure: useMeasure() }, 
+    { key: "7", bgcolor: "cyan", measure: useMeasure() },
+    { key: "8", bgcolor: "yellow", measure: useMeasure() },
+    { key: "9", bgcolor: "magenta", measure: useMeasure() },
+    { key: "10", bgcolor: "cyan", measure: useMeasure() },
+    { key: "11", bgcolor: "yellow", measure: useMeasure() },
+    { key: "12", bgcolor: "magenta", measure: useMeasure() },
+    { key: "13", bgcolor: "cyan", measure: useMeasure() },
+    { key: "14", bgcolor: "yellow", measure: useMeasure() },
+    { key: "15", bgcolor: "magenta", measure: useMeasure() },
+    { key: "16", bgcolor: "cyan", measure: useMeasure() },
+    { key: "17", bgcolor: "yellow", measure: useMeasure() },
+    { key: "18", bgcolor: "magenta", measure: useMeasure() },
+    { key: "19", bgcolor: "cyan", measure: useMeasure() },
+    { key: "20", bgcolor: "yellow", measure: useMeasure() },
+    { key: "21", bgcolor: "magenta", measure: useMeasure() },
+    { key: "22", bgcolor: "cyan", measure: useMeasure() },
+    { key: "23", bgcolor: "yellow", measure: useMeasure() },
+    { key: "24", bgcolor: "magenta", measure: useMeasure() },
+    { key: "25", bgcolor: "cyan", measure: useMeasure() },
+    { key: "26", bgcolor: "yellow", measure: useMeasure() },
+    { key: "27", bgcolor: "magenta", measure: useMeasure() },
+    { key: "28", bgcolor: "cyan", measure: useMeasure() },
+    { key: "29", bgcolor: "yellow", measure: useMeasure() },
+    { key: "30", bgcolor: "cyan", measure: useMeasure() }, 
+    { key: "31", bgcolor: "yellow", measure: useMeasure() }, 
+    { key: "32", bgcolor: "magenta", measure: useMeasure() }, 
+    { key: "33", bgcolor: "cyan", measure: useMeasure() }, 
+    { key: "34", bgcolor: "yellow", measure: useMeasure() }, 
+    { key: "35", bgcolor: "magenta", measure: useMeasure() }, 
+    { key: "36", bgcolor: "cyan", measure: useMeasure() },
+    { key: "37", bgcolor: "yellow", measure: useMeasure() },
+    { key: "38", bgcolor: "magenta", measure: useMeasure() },
+    { key: "39", bgcolor: "cyan", measure: useMeasure() },
+    { key: "40", bgcolor: "yellow", measure: useMeasure() },
+    { key: "41", bgcolor: "magenta", measure: useMeasure() },
+    { key: "42", bgcolor: "cyan", measure: useMeasure() },
+    { key: "43", bgcolor: "yellow", measure: useMeasure() },
+    { key: "44", bgcolor: "magenta", measure: useMeasure() },
+    { key: "45", bgcolor: "cyan", measure: useMeasure() },
+    { key: "46", bgcolor: "yellow", measure: useMeasure() },
+    { key: "47", bgcolor: "magenta", measure: useMeasure() },
+    { key: "48", bgcolor: "cyan", measure: useMeasure() },
+    { key: "49", bgcolor: "yellow", measure: useMeasure() },
+    { key: "50", bgcolor: "magenta", measure: useMeasure() },
+    { key: "51", bgcolor: "cyan", measure: useMeasure() },
+    { key: "52", bgcolor: "yellow", measure: useMeasure() },
+    { key: "53", bgcolor: "magenta", measure: useMeasure() },
+    { key: "54", bgcolor: "cyan", measure: useMeasure() },
+    { key: "55", bgcolor: "yellow", measure: useMeasure() },
+    { key: "56", bgcolor: "magenta", measure: useMeasure() },
+    { key: "57", bgcolor: "cyan", measure: useMeasure() },
+    { key: "58", bgcolor: "yellow", measure: useMeasure() },
+  ]
+  
   const gridItems = useRef([])
+  const oldPositions = useRef(Array.from(elements).fill({}))
+  const newPositions = useRef(Array.from(elements).fill({}))
 
   const updatePosition = (idx, topRaw, leftRaw, top, left) => {
     if (idx === 0){
-      positions.current[idx] = {topRaw, leftRaw, top, left}
-    }else if (Object.keys(positions.current[idx-1]).length){
-      positions.current[idx] = {topRaw, leftRaw, top, left}
+      oldPositions.current[idx] = {topRaw, leftRaw, top, left}
+    }else if (Object.keys(oldPositions.current[idx-1]).length){
+      oldPositions.current[idx] = {topRaw, leftRaw, top, left}
     }
+  }
+
+  const getItemWidth = (idx) => {
+    if (elements[idx])
+      return elements[idx].measure[1].width
+    return 0
+  }
+
+  const calculateLayout = (elements, marginTop, marginRight, marginBottom, marginLeft, containerWidth) => {
+    // FIXME what if item does not fit!? 
+    let currentRow = 0
+    let currentTopOffset = 0
+    let currentLeftOffset = 0
+    let spaceRemainingX = containerWidth
+    const nextRow = () => {
+      currentRow += 1
+      currentTopOffset += defaultItemHeight // TODO adjust to variable height
+      currentLeftOffset = 0
+      spaceRemainingX = containerWidth
+    }
+    
+    elements.forEach((e, i) => {
+      const necessarySpaceX = marginLeft + getItemWidth(i) + marginRight
+      while (spaceRemainingX <= necessarySpaceX){
+        nextRow()
+      }
+      // console.log(`updating ${i}: row - ${currentRow}, top - ${currentTopOffset + marginTop}, left - ${currentLeftOffset + marginLeft}`)
+      newPositions.current[i] = 
+        { row: currentRow, top: currentTopOffset + marginTop, left: currentLeftOffset + marginLeft }
+      // console.log(newPositions)
+      spaceRemainingX -= necessarySpaceX
+      currentLeftOffset += necessarySpaceX
+    })
   }
   
   useEffect(() => {
+    calculateLayout(elements, 0, 0, 20, 0, contentWidth)
+  },[...elements])
 
+  useEffect(() => {
     const getItemWidth = (idx) => {
       if (elements[idx])
         return elements[idx].measure[1].width
@@ -96,7 +177,7 @@ export default function App() {
       return offset
     }
 
-    const getAdjustedTopOffsetRaw = (idx) => positions.current[idx].topRaw
+    const getAdjustedTopOffsetRaw = (idx) => oldPositions.current[idx].topRaw
 
     const getPreviousItemsInRow = (idx, containerWidth) => {
       let currentItem = idx-1
@@ -105,7 +186,7 @@ export default function App() {
       // console.log(`filtering out in getPreviousItemsInRow(${idx}, ${containerWidth}) - `)
       // console.log(`positions.current:`)
       // console.log(positions.current)
-      positions.current
+      oldPositions.current
         .slice(0,idx)
         .forEach(({topRaw}, i) => {if (topRaw === adjustedTopOffsetRaw) elementsInRow.push(i)})
       // console.log(`returning:`)
@@ -124,10 +205,10 @@ export default function App() {
 
     const getPreviousItemsWidthForRow = (idx, containerWidth) => {
       const previousItems = getPreviousItemsInRow(idx, containerWidth)
-      console.log(previousItems)
+      // console.log(previousItems)
       const firstItemInRow = previousItems.length ? previousItems[0] : idx
       const width = getItemsWidth(firstItemInRow, idx)
-      console.log(`getItemsWidth(${firstItemInRow}, ${idx}) = ${width}`)
+      // console.log(`getItemsWidth(${firstItemInRow}, ${idx}) = ${width}`)
       return width
     }
 
@@ -213,29 +294,29 @@ export default function App() {
     };
     
     let gridItemsCalcs = elements.map((el, i) => {
-      const [topRaw, top] = 
-        calculateTopPx(
-          i,
-          defaultItemHeight,
-          defaultMarginY,
-          gridSize.width,
-          // true
-        );
-      const [leftRaw, left] =
-        calculateLeftPx(
-          i,
-          gridSize.width,
-          true
-        );
-      console.log(`containerWidth: ${gridSize.width}`)
+      // const [topRaw, top] = 
+      //   calculateTopPx(
+      //     i,
+      //     defaultItemHeight,
+      //     defaultMarginY,
+      //     gridSize.width,
+      //     // true
+      //   );
+      // const [leftRaw, left] =
+      //   calculateLeftPx(
+      //     i,
+      //     gridSize.width,
+      //     // true
+      //   );
+      // console.log(`containerWidth: ${gridSize.width}`)
       const xy = [
-        top,
-        left
+        newPositions.current[i].top,
+        newPositions.current[i].left
       ]
-      updatePosition(i, 
-        topRaw,
-        leftRaw,// getLeftOffsetRaw(i),
-        top, left)
+      // updatePosition(i, 
+      //   topRaw,
+      //   leftRaw,// getLeftOffsetRaw(i),
+      //   top, left)
       const w = clicked.includes(el.key) ? 50 : 20
       // console.log({...el, xy})
       return {...el, xy, w}
@@ -253,7 +334,7 @@ export default function App() {
     config: { mass: 5, tension: 500, friction: 100 },
   })
 
-  console.log(positions.current)
+  // console.log(oldPositions.current)
   
   return (
     <div>
@@ -305,28 +386,54 @@ export default function App() {
       <animated.button onClick={() => setContentWidth(contentWidth-2)} style={spin}>
         {'-'}
       </animated.button>
-      <div>
-          <table>
-              <thead>
-                <th>el</th>
-                <th>topRaw</th>
-                <th>leftRaw</th>
-                <th>top</th>
-                <th>left</th>
-              </thead>
-              <tbody>
-              {positions.current.map(({topRaw, leftRaw, top, left}, i) =>
-                <tr>
-                  <td>{elements[i].key}</td>
-                  <td>{topRaw}</td>
-                  <td>{leftRaw}</td>
-                  <td>{top}</td>
-                  <td>{left}</td>
-                </tr>
-              )}
-              </tbody>
-          </table>
-      </div> 
+      <div style={{display: "flex", flexDirection: "row"}}>
+        <div style={{marginRight: 100}}>
+          New calc - containerWidth: {contentWidth}
+            <table>
+                <thead>
+                  <th>el</th>
+                  <th>row</th>
+                  {/* <th>leftRaw</th> */}
+                  <th>top</th>
+                  <th>left</th>
+                </thead>
+                <tbody>
+                {newPositions.current.map(({row, top, left}, i) =>
+                  <tr>
+                    <td>{elements[i].key}</td>
+                    <td>{row}</td>
+                    {/* <td>{leftRaw}</td> */}
+                    <td>{top}</td>
+                    <td>{left}</td>
+                  </tr>
+                )}
+                </tbody>
+            </table>
+        </div>
+        <div>
+          Old calc
+            <table>
+                <thead>
+                  <th>el</th>
+                  <th>topRaw</th>
+                  <th>leftRaw</th>
+                  <th>top</th>
+                  <th>left</th>
+                </thead>
+                <tbody>
+                {oldPositions.current.map(({topRaw, leftRaw, top, left}, i) =>
+                  <tr>
+                    <td>{elements[i].key}</td>
+                    <td>{topRaw}</td>
+                    <td>{leftRaw}</td>
+                    <td>{top}</td>
+                    <td>{left}</td>
+                  </tr>
+                )}
+                </tbody>
+            </table>
+        </div> 
+      </div>
     </div>
   );
 }
