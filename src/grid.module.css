@@ -1,8 +1,6 @@
 .gridContainer {
   border: 1px solid tomato;
   overflow: hidden;
-  width: 200px;
-  height:400px;
   position: relative;
 }
 .gridItem {

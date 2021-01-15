@@ -4,18 +4,18 @@ import { animated, useTransition } from "react-spring";
 import style from "./grid.module.css";
 
 export default function App() {
-  // const defaultMarginX = 20;
-  // const defaultMarginY = 20;
-  const defaultItemHeight = 20;
-  // const defaultItemWidth = 20;
-  const containerWidth = 120;
-  // const halfContainerWidth = containerWidth/2
-  // const containerHeight = 300;
-  // const defaultHeight = `${containerHeight}px`;
-  // const defaultWidth = `${containerWidth}px`;
+  const defaultMarginRight = 10;
+  const defaultMarginLeft = 10;
+  const defaultMarginTop = 10;
+  const defaultMarginBottom = 10;
 
-  // Manages the open or cloased state of the accordion
-  // const [open, toggle] = useState(false);
+  const defaultItemHeight = 40;
+  const defaultItemWidth = 40;
+
+  const containerWidth = 220;
+  const containerHeight = 320;
+
+  const widthIncreaseStep = 5
 
   // The height of the content inside of the accordion
   const [contentWidth, setContentWidth] = useState(containerWidth);
@@ -37,8 +37,6 @@ export default function App() {
 
   const [clicked, setClicked] = useState([])
 
-  
-  
   const elements = [
     { key: "1", bgcolor: "cyan", measure: useMeasure() }, 
     { key: "2", bgcolor: "yellow", measure: useMeasure() }, 
@@ -50,95 +48,9 @@ export default function App() {
     { key: "8", bgcolor: "yellow", measure: useMeasure() },
     { key: "9", bgcolor: "magenta", measure: useMeasure() },
     { key: "10", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "11", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "12", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "13", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "14", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "15", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "16", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "17", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "18", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "19", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "20", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "21", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "22", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "23", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "24", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "25", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "26", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "27", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "28", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "29", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "30", bgcolor: "cyan", measure: useMeasure() }, 
-    // { key: "31", bgcolor: "yellow", measure: useMeasure() }, 
-    // { key: "32", bgcolor: "magenta", measure: useMeasure() }, 
-    // { key: "33", bgcolor: "cyan", measure: useMeasure() }, 
-    // { key: "34", bgcolor: "yellow", measure: useMeasure() }, 
-    // { key: "35", bgcolor: "magenta", measure: useMeasure() }, 
-    // { key: "36", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "37", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "38", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "39", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "40", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "41", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "42", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "43", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "44", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "45", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "46", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "47", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "48", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "49", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "50", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "51", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "52", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "53", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "54", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "55", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "56", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "57", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "58", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "59", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "60", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "61", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "62", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "63", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "64", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "65", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "66", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "67", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "68", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "69", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "70", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "71", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "72", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "73", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "74", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "75", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "76", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "77", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "78", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "79", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "80", bgcolor: "cyan", measure: useMeasure() }, 
-    // { key: "81", bgcolor: "yellow", measure: useMeasure() }, 
-    // { key: "82", bgcolor: "magenta", measure: useMeasure() }, 
-    // { key: "83", bgcolor: "cyan", measure: useMeasure() }, 
-    // { key: "84", bgcolor: "yellow", measure: useMeasure() }, 
-    // { key: "85", bgcolor: "magenta", measure: useMeasure() }, 
-    // { key: "86", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "87", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "88", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "89", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "90", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "91", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "92", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "93", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "94", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "95", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "96", bgcolor: "yellow", measure: useMeasure() },
-    // { key: "97", bgcolor: "magenta", measure: useMeasure() },
-    // { key: "98", bgcolor: "cyan", measure: useMeasure() },
-    // { key: "99", bgcolor: "yellow", measure: useMeasure() },
+    { key: "11", bgcolor: "yellow", measure: useMeasure() },
+    { key: "12", bgcolor: "magenta", measure: useMeasure() },
+    { key: "13", bgcolor: "cyan", measure: useMeasure() },
   ]
   
   const newPositions = useRef(Array.from(elements).fill({}))
@@ -161,7 +73,7 @@ export default function App() {
       
       const nextRow = () => {
         currentRow += 1
-        currentTopOffset += defaultItemHeight // TODO adjust to variable height
+        currentTopOffset += marginTop + defaultItemHeight + marginBottom
         currentLeftOffset = 0
         spaceRemainingX = containerWidth
       }
@@ -171,10 +83,8 @@ export default function App() {
         while (spaceRemainingX <= necessarySpaceX && containerWidth > getItemWidth(i)){
           nextRow()
         }
-        // console.log(`updating ${i}: row - ${currentRow}, top - ${currentTopOffset + marginTop}, left - ${currentLeftOffset + marginLeft}`)
         newPositions.current[i] = 
           { row: currentRow, top: currentTopOffset + marginTop, left: currentLeftOffset + marginLeft }
-        // console.log(newPositions)
         spaceRemainingX -= necessarySpaceX
         currentLeftOffset += necessarySpaceX
       })
@@ -182,19 +92,18 @@ export default function App() {
       // console.log(`Call to calculateLayout took ${t1 - t0} milliseconds.`)
     }
 
-    calculateLayout(elements, 0, 0, 20, 0, contentWidth)
+    calculateLayout(elements, defaultMarginTop, defaultMarginRight, defaultMarginBottom, defaultMarginLeft, contentWidth)
     
-    let gridItemsCalcs = elements.map((el, i) => {
+    let gridItemsCalcs = elements.map((item, i) => {
 
       const xy = [
         newPositions.current[i].top,
         newPositions.current[i].left
       ]
 
-      const w = clicked.includes(el.key) ? 50 : 20
-      return {...el, xy, w}
+      item.width = clicked.includes(item.key) ? defaultItemWidth*2 : defaultItemWidth
+      return {...item, xy, w: item.width}
     })
-    // console.log(`passing through useMemo`)
     return gridItemsCalcs
   }, [contentWidth, elements, clicked])
 
@@ -204,30 +113,25 @@ export default function App() {
     from: ({xy, w}) => ({xy, w, opacity: 0}),
     enter: ({xy, w}) => ({xy, w, opacity: .5}),
     update: ({xy, w}) => ({xy, w}),
-    config: { mass: 5, tension: 700, friction: 200 },
+    config: { mass: 5, tension: 500, friction: 200 },
   })
 
-  // console.log(oldPositions.current)
-  
   return (
     <div>
       <animated.div
         className={style.gridContainer}
-        style={{width: contentWidth}}
+        style={{width: contentWidth, height: containerHeight}}
         key={1}
-        // ref={gridRef}
       >
         {transitions.map((el) => {
             const {item, props: { xy, w, ...rest }, key} = el;
-            // console.log(key)
             return (
             <animated.div
               key={item.key}
               className={style.gridItem}
               style={{
-                backgroundColor: item.bgcolor,
-                opacity: 0.7,
-                width: w,//.interpolate(x => `scaleY(${x}px)`),
+                width: w,
+                height: defaultItemHeight,
                 // transform: xy.interpolate((x, y) => `translate3d(${y}px,${x}px, 0px)`),
                 top: xy.interpolate((x, y) => `${x}px`),
                 left: xy.interpolate((x, y) => `${y}px`),
@@ -242,21 +146,28 @@ export default function App() {
                 }
               }}
             >
-              {item.key}
+              <animated.div style={{
+                display: "flex", flexDirection: "column", justifyContent: "center",
+                backgroundColor: item.bgcolor,
+                opacity: 0.7,
+                height: "inherit",
+              }}>
+                {item.key}
+              </animated.div>
             </animated.div>)
           })}
       </animated.div>
       <animated.button onClick={() => toggleContentWidth(1/2)} >
-        {'<'}
+        {'1/2'}
       </animated.button>
       <animated.button onClick={() => toggleContentWidth(2)} >
-        {'>'}
+        {'x2'}
       </animated.button>
       
-      <animated.button onClick={() => setContentWidth(contentWidth+2)} >
+      <animated.button onClick={() => setContentWidth(contentWidth+widthIncreaseStep)} >
         {'+'}
       </animated.button>
-      <animated.button onClick={() => setContentWidth(contentWidth-2)} >
+      <animated.button onClick={() => setContentWidth(contentWidth-widthIncreaseStep)} >
         {'-'}
       </animated.button>
       <div style={{display: "flex", flexDirection: "row"}}>
