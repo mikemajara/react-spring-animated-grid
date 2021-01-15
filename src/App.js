@@ -80,7 +80,10 @@ export default function App() {
       
       elements.forEach((e, i) => {
         const necessarySpaceX = marginLeft + getItemWidth(i) + marginRight
-        while (spaceRemainingX <= necessarySpaceX && containerWidth > getItemWidth(i)){
+        if (
+          spaceRemainingX <= necessarySpaceX && 
+          containerWidth > necessarySpaceX
+        ){
           nextRow()
         }
         newPositions.current[i] = 
