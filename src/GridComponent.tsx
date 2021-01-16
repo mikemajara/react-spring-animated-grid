@@ -1,4 +1,9 @@
-import React, { useState, useRef, useMemo, MutableRefObject, ReactPropTypes, PropsWithChildren, Component, Children } from "react";
+import React, { 
+  useState,
+  useRef,
+  useMemo,
+  MutableRefObject,
+} from "react";
 // import { useMeasure } from "react-use";
 import { animated, useTransition } from "react-spring";
 import style from "./grid.module.css";
@@ -41,14 +46,10 @@ export default function GridComponent(props: any) {
   const toggleItemWidth = (key: string) => {
     const idx = elements.current.findIndex(e => e.key === key)
     if (idx >= 0){
-      const currWidth = elements.current[idx].width;
       elements.current[idx].width = 
       elements.current[idx].width === defaultItemWidth
         ? defaultItemWidth * ((Math.floor(Math.random() * 10) % 3) + 2)
         : defaultItemWidth
-      console.log(`toggling width for item.key: ${key} 
-        from: ${currWidth}
-        to: ${elements.current[idx].width}`)
     }
   }
 
@@ -60,21 +61,6 @@ export default function GridComponent(props: any) {
       width: defaultItemWidth
     }))
   )
-  // const elements: MutableRefObject<Item[]> = useRef<Item[]>([
-  //   { key: "1", width: defaultItemWidth, style: { backgroundColor: "cyan" } }, 
-  //   { key: "2", width: defaultItemWidth, style: { backgroundColor: "yellow" } }, 
-  //   { key: "3", width: defaultItemWidth, style: { backgroundColor: "magenta" } }, 
-  //   { key: "4", width: defaultItemWidth, style: { backgroundColor: "cyan" } }, 
-  //   { key: "5", width: defaultItemWidth, style: { backgroundColor: "yellow" } }, 
-  //   { key: "6", width: defaultItemWidth, style: { backgroundColor: "magenta" } }, 
-  //   { key: "7", width: defaultItemWidth, style: { backgroundColor: "cyan" } },
-  //   { key: "8", width: defaultItemWidth, style: { backgroundColor: "yellow" } },
-  //   { key: "9", width: defaultItemWidth, style: { backgroundColor: "magenta" } },
-  //   { key: "10", width: defaultItemWidth, style: { backgroundColor: "cyan" } },
-  //   { key: "11", width: defaultItemWidth, style: { backgroundColor: "yellow" } },
-  //   { key: "12", width: defaultItemWidth, style: { backgroundColor: "magenta" } },
-  //   { key: "13", width: defaultItemWidth, style: { backgroundColor: "cyan" } },
-  // ])
   
   const positions: MutableRefObject<Position[]> = useRef<Position[]>(
     new Array(elements.current.length)

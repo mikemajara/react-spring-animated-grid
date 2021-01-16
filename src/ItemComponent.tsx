@@ -1,17 +1,5 @@
-import React, { useState, useRef, useMemo, MutableRefObject, ReactPropTypes } from "react";
+import React, { ReactPropTypes } from "react";
 // import { useMeasure } from "react-use";
-import { animated, useTransition } from "react-spring";
-import style from "./grid.module.css";
-import {
-  calculateLayout,
-  defaultItemWidth,
-  defaultMarginTop,
-  defaultMarginRight,
-  defaultMarginBottom,
-  defaultMarginLeft,
-  defaultItemHeight,
-} from "./helpers";
-import { Position } from "./main";
 import { CSSProperties } from "react";
 
 interface ItemProps extends ReactPropTypes{
