@@ -9,11 +9,6 @@ import {
   defaultItemWidth
 } from './defaults'
 
-interface ReactNodeWithSize<T extends React.ReactNode>{
-  width: number,
-  height: number,
-}
-
 export const calculateLayout = (
   elements: React.ReactElement[],
   marginTop: number,
@@ -37,11 +32,6 @@ export const calculateLayout = (
 
   const positions: Position[] = []
   
-  // console.log(`children:`)
-  // elements.map(e => {
-  //   console.log(e)
-  // })
-
   elements.forEach((e, i) => {
     const elementWidth = e.props.style.width
     const necessarySpaceX = marginLeft + elementWidth + marginRight

@@ -20,7 +20,7 @@ import {
 } from "./defaults";
 import { Position } from "./main";
 
-export default function GridComponent(props: any) {
+export default function GridComponent(props: any): ReactElement {
   
   const { 
     style: { width: containerWidth },
@@ -101,6 +101,7 @@ export default function GridComponent(props: any) {
               key={item.key}
               style={{
                 position: "absolute",
+                border: "1px solid black",
                 width,
                 height: refMeasures[i].height,
                 top: top?.interpolate(top => `${top}px`),

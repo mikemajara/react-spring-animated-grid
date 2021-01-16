@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Grid from './GridComponent'
-import {defaultItemWidth} from './helpers'
-import { animated } from 'react-spring'
+import {defaultItemWidth} from './defaults'
+import { animated, useSpring, useTransition } from 'react-spring'
 
 export default function App() {  
 
@@ -16,10 +16,10 @@ export default function App() {
   }
 
   const toggleItemWidth = (key: string) => {
-    const idx = elements.findIndex(e => e.key === key)
+    const idx: number = elements.findIndex(e => e.key === key)
     if (idx >= 0){
-      elements[idx].size[1]( 
-        elements[idx].size[0] === defaultItemWidth
+      elements[idx].width[1]( 
+        elements[idx].width[0] === defaultItemWidth
           ? defaultItemWidth * ((Math.floor(Math.random() * 10) % 3) + 2)
           : defaultItemWidth
       )
@@ -27,15 +27,36 @@ export default function App() {
   }
 
   const elements = [
-    { key: "a", size: useState(40) },
-    { key: "b", size: useState(40) },
-    { key: "c", size: useState(40) },
-    { key: "d", size: useState(40) },
-    { key: "e", size: useState(40) },
-    { key: "f", size: useState(40) },
-    { key: "g", size: useState(40) },
-    { key: "h", size: useState(40) },
+    { key: "a", width: useState(40)},
+    { key: "b", width: useState(40)},
+    { key: "c", width: useState(40)},
+    { key: "d", width: useState(40)},
+    { key: "e", width: useState(40)},
+    { key: "f", width: useState(40)},
+    { key: "g", width: useState(40)},
+    { key: "h", width: useState(40)},
   ]
+
+  // const transitions = useTransition(elements, el => el.key, {
+  const transitions = useTransition(
+    elements,
+    item => item.key,
+    // FIXME -- The problem here is we cannot use
+    // a state as parameter to define the transition
+    // we need a raw value
+    {
+      from: (el) => ({width: el.width[0]}),
+      enter: (el) => ({width: el.width[0]}),
+      update: (el) => ({width: el.width[0]}),
+    }
+    // elements, 
+    // el => el.key, 
+    // {
+    //   from: ({width}) => ({width}),
+    //   enter: ({width}) => ({width}),
+    //   update: ({width}) => ({width})
+    // }
+  )
 
   return (
     <div>
@@ -45,11 +66,15 @@ export default function App() {
           height: 320
         }}
       >
-        { elements.map(item =>
-            <div
+        { elements.map((item, idx) =>
+            <animated.div
               key={item.key}
               style={{
-                width: item.size[0],
+                // FIXME -- This fails to pass on the width
+                // down because the value is not a plain one,
+                // its a transition value. Check what value 
+                // arrives at the parent component.
+                width: transitions[idx].props.width,
                 height: 40,
                 border: "1px solid purple",
                 display: "flex",
@@ -60,7 +85,7 @@ export default function App() {
               }}
             >
               {item.key}
-            </div>
+            </animated.div>
           )
         }
       </Grid>
