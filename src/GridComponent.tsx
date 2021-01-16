@@ -6,6 +6,7 @@ import React, {
 } from "react";
 // import { useMeasure } from "react-use";
 import { animated, useTransition } from "react-spring";
+import { useMeasure } from "react-use";
 import style from "./grid.module.css";
 import {
   calculateLayout,
@@ -43,15 +44,15 @@ export default function GridComponent(props: any) {
     setContentWidth(contentWidth*factor)
   }
 
-  const toggleItemWidth = (key: string) => {
-    const idx = elements.current.findIndex(e => e.key === key)
-    if (idx >= 0){
-      elements.current[idx].width = 
-      elements.current[idx].width === defaultItemWidth
-        ? defaultItemWidth * ((Math.floor(Math.random() * 10) % 3) + 2)
-        : defaultItemWidth
-    }
-  }
+  // const toggleItemWidth = (key: string) => {
+  //   const idx = elements.current.findIndex(e => e.key === key)
+  //   if (idx >= 0){
+  //     elements.current[idx].width = 
+  //     elements.current[idx].width === defaultItemWidth
+  //       ? defaultItemWidth * ((Math.floor(Math.random() * 10) % 3) + 2)
+  //       : defaultItemWidth
+  //   }
+  // }
 
   const [clicked, setClicked] = useState(false)
 
@@ -66,11 +67,17 @@ export default function GridComponent(props: any) {
     new Array(elements.current.length)
   )
 
+  const refMeasures = props.children.map(() => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [size, {width, height}] = useMeasure()
+    return {size, width, height}
+  })
+
   const gridItems = useMemo(() => {
     console.log(`passing through memo`)
 
     calculateLayout(
-      elements.current,
+      props.children,
       defaultMarginTop,
       defaultMarginRight,
       defaultMarginBottom,
@@ -83,18 +90,18 @@ export default function GridComponent(props: any) {
       }
     })
     
-    let gridItemsCalcs = elements.current.map((item, i) => {
+    let gridItemsCalcs = props.children.map((item: React.ReactElement, i: number) => {
       return {
         ...item,
         top: positions.current[i].top,
         left: positions.current[i].left,
-        width: item.width
+        width: refMeasures[i].width
       }
     })
     return gridItemsCalcs
     // FIXME - Mutating the reference elements.current does not trigger the Memo
     // I need to find the way around triggering this with a clicked flag.
-  }, [contentWidth, clicked])
+  }, [contentWidth, refMeasures.map((e:any) => e.width), clicked])
 
 
 
@@ -104,6 +111,12 @@ export default function GridComponent(props: any) {
     update: ({top, left, width}) => ({top, left, width, opacity: .5}),
     // config: { mass: 5, tension: 500, friction: 200 },
   })
+  // const transitions = useTransition(gridItems, el => el.key, {
+  //   from: ({top, left}) => ({top, left, opacity: 0}),
+  //   enter: ({top, left}) => ({top, left, opacity: .5}),
+  //   update: ({top, left}) => ({top, left, opacity: .5}),
+  //   // config: { mass: 5, tension: 500, friction: 200 },
+  // })
 
   return (
     <div>
@@ -118,29 +131,24 @@ export default function GridComponent(props: any) {
             return (
             <animated.div
               key={item.key}
-              className={style.gridItem}
+              // className={style.gridItem}
               style={{
+                position: "absolute",
                 width,
-                height: defaultItemHeight,
-                // transform: xy.interpolate((x, y) => `translate3d(${y}px,${x}px, 0px)`),
+                height: refMeasures[i].height,
                 top: top?.interpolate(top => `${top}px`),
                 left: left?.interpolate(left => `${left}px`),
                 ...rest
               }}
-              onClick={() => {
-                toggleItemWidth(item.key);
-                setClicked(!clicked)
-              }}
             >
-              {props.children[i]}
-              {/* <animated.div style={{
-                ...item.style,
-                display: "flex", flexDirection: "column", justifyContent: "center",
-                opacity: 0.7,
-                height: "inherit",
-              }}>
-                {item.key}
-              </animated.div> */}
+              {
+                React.cloneElement(
+                  props.children[i],
+                  {
+                    ref: refMeasures[i].size
+                  }
+                )
+              }
             </animated.div>)
           })}
       </animated.div>

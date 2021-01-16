@@ -8,8 +8,13 @@ export const defaultMarginBottom = 10;
 export const defaultItemHeight = 40;
 export const defaultItemWidth = 40;
 
+interface ReactNodeWithSize<T extends React.ReactNode>{
+  width: number,
+  height: number,
+}
+
 export const calculateLayout = (
-  elements: Item[],
+  elements: React.ReactElement[],
   marginTop: number,
   marginRight: number,
   marginBottom: number,
@@ -31,8 +36,14 @@ export const calculateLayout = (
 
   const positions: Position[] = []
   
+  // console.log(`children:`)
+  // elements.map(e => {
+  //   console.log(e)
+  // })
+
   elements.forEach((e, i) => {
-    const necessarySpaceX = marginLeft + e.width + marginRight
+    const elementWidth = e.props.style.width
+    const necessarySpaceX = marginLeft + elementWidth + marginRight
     if (
       // FIXME -- There is a weird behavior because of bigger boxes than the
       // container width. which makes the grid behave weirdly. Maybe if boxes 

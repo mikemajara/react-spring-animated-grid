@@ -36,7 +36,6 @@ export default function ItemComponent(props: any) {
   // }
 
   // const [clicked, setClicked] = useState(false)
-
   return (
     <div
       // className={style.gridItem}
