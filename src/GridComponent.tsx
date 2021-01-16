@@ -82,9 +82,9 @@ export default function GridComponent(props: any): ReactElement {
 
 
   const transitions = useTransition(gridItems, el => el.key, {
-    from: ({top, left, width}) => ({top, left, width, opacity: 0}),
-    enter: ({top, left, width}) => ({top, left, width, opacity: .5}),
-    update: ({top, left, width}) => ({top, left, width, opacity: .5}),
+    from: ({top, left}) => ({top, left, opacity: 0}),
+    enter: ({top, left}) => ({top, left, opacity: .5}),
+    update: ({top, left}) => ({top, left, opacity: .5}),
     // config: { mass: 5, tension: 500, friction: 200 },
   })
 
