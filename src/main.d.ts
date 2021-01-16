@@ -7,10 +7,3 @@ declare class Position {
   left: number = 0;
   units?: string = "px";
 }
-
-declare class Item {
-  key: string;
-  width: number;
-  height?: number;
-  style?: CSSProperties;
-}

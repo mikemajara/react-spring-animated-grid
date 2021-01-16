@@ -1,12 +1,13 @@
-import { Item, Position } from "./main"
+import { Position } from "./main"
+import {
+  defaultMarginRight,
+  defaultMarginLeft,
+  defaultMarginTop,
+  defaultMarginBottom,
 
-export const defaultMarginRight = 10;
-export const defaultMarginLeft = 10;
-export const defaultMarginTop = 10;
-export const defaultMarginBottom = 10;
-
-export const defaultItemHeight = 40;
-export const defaultItemWidth = 40;
+  defaultItemHeight,
+  defaultItemWidth
+} from './defaults'
 
 interface ReactNodeWithSize<T extends React.ReactNode>{
   width: number,
