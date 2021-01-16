@@ -1,4 +1,5 @@
 import { Position } from "./main"
+import { AnimatedValue } from 'react-spring'
 import {
   defaultMarginRight,
   defaultMarginLeft,
@@ -33,7 +34,11 @@ export const calculateLayout = (
   const positions: Position[] = []
   
   elements.forEach((e, i) => {
-    const elementWidth = e.props.style.width
+    let elementWidth = e.props.style.width
+    // FIX - If the elements' values are AnimatedValues,
+    // we need to extract the actual width value from there.
+    if (typeof elementWidth === "object") {elementWidth = elementWidth.value}
+
     const necessarySpaceX = marginLeft + elementWidth + marginRight
     if (
       // FIXME -- There is a weird behavior because of bigger boxes than the

@@ -41,21 +41,11 @@ export default function App() {
   const transitions = useTransition(
     elements,
     item => item.key,
-    // FIXME -- The problem here is we cannot use
-    // a state as parameter to define the transition
-    // we need a raw value
     {
       from: (el) => ({width: el.width[0]}),
       enter: (el) => ({width: el.width[0]}),
       update: (el) => ({width: el.width[0]}),
     }
-    // elements, 
-    // el => el.key, 
-    // {
-    //   from: ({width}) => ({width}),
-    //   enter: ({width}) => ({width}),
-    //   update: ({width}) => ({width})
-    // }
   )
 
   return (
@@ -76,7 +66,7 @@ export default function App() {
                 // arrives at the parent component.
                 width: transitions[idx].props.width,
                 height: 40,
-                border: "1px solid purple",
+                border: "1px solid green",
                 display: "flex",
                 justifyContent: "center"
               }}

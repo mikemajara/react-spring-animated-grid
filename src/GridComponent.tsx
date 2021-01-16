@@ -58,6 +58,11 @@ export default function GridComponent(props: any): ReactElement {
     })
     
     let gridItemsCalcs = children.map((item: ReactElement, i: number) => {
+      // console.log(`--- start log ---`)
+      // refMeasures.forEach((e: any, i: number) => {
+      //   console.log(`element ${children[i].key} width: ${e.width}`)
+      // })
+      // console.log(`---- end log ----`)
       return {
         ...item,
         top: positions.current[i].top,
