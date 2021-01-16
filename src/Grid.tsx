@@ -1,16 +1,11 @@
-import React, { useState, useRef, useMemo } from "react";
-import { useMeasure } from "react-use";
+import React, { useState, useRef, useMemo, MutableRefObject } from "react";
+// import { useMeasure } from "react-use";
 import { animated, useTransition } from "react-spring";
 import style from "./grid.module.css";
+import { calculateLayout, defaultItemWidth } from "./helpers";
+import { Item, Position } from "./main";
 
 export default function Grid() {
-  const defaultMarginRight = 10;
-  const defaultMarginLeft = 10;
-  const defaultMarginTop = 10;
-  const defaultMarginBottom = 10;
-
-  const defaultItemHeight = 40;
-  const defaultItemWidth = 40;
 
   const containerWidth = 220;
   const containerHeight = 320;
@@ -30,93 +25,84 @@ export default function Grid() {
   //   transform: open ? "rotate(180deg)" : "rotate(0deg)"
   // });
 
-  const toggleContentWidth = (factor) => {
+  const toggleContentWidth = (factor: number) => {
     if (factor === 0) return
     setContentWidth(contentWidth*factor)
   }
 
-  const [clicked, setClicked] = useState([])
+  const toggleItemWidth = (key: string) => {
+    const idx = elements.current.findIndex(e => e.key === key)
+    if (idx >= 0){
+      const currWidth = elements.current[idx].width;
+      elements.current[idx].width = 
+      elements.current[idx].width === defaultItemWidth
+        ? defaultItemWidth * ((Math.floor(Math.random() * 10) % 3) + 2)
+        : defaultItemWidth
+      console.log(`toggling width for item.key: ${key} 
+        from: ${currWidth}
+        to: ${elements.current[idx].width}`)
+    }
+  }
 
-  const elements = [
-    { key: "1", bgcolor: "cyan", measure: useMeasure() }, 
-    { key: "2", bgcolor: "yellow", measure: useMeasure() }, 
-    { key: "3", bgcolor: "magenta", measure: useMeasure() }, 
-    { key: "4", bgcolor: "cyan", measure: useMeasure() }, 
-    { key: "5", bgcolor: "yellow", measure: useMeasure() }, 
-    { key: "6", bgcolor: "magenta", measure: useMeasure() }, 
-    { key: "7", bgcolor: "cyan", measure: useMeasure() },
-    { key: "8", bgcolor: "yellow", measure: useMeasure() },
-    { key: "9", bgcolor: "magenta", measure: useMeasure() },
-    { key: "10", bgcolor: "cyan", measure: useMeasure() },
-    { key: "11", bgcolor: "yellow", measure: useMeasure() },
-    { key: "12", bgcolor: "magenta", measure: useMeasure() },
-    { key: "13", bgcolor: "cyan", measure: useMeasure() },
-  ]
-  
-  const newPositions = useRef(Array.from(elements).fill({}))
+  const [clicked, setClicked] = useState(false)
 
+  const elements: MutableRefObject<Item[]> = useRef<Item[]>([
+    { key: "1", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "cyan" } }, 
+    { key: "2", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "yellow" } }, 
+    { key: "3", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "magenta" } }, 
+    { key: "4", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "cyan" } }, 
+    { key: "5", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "yellow" } }, 
+    { key: "6", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "magenta" } }, 
+    { key: "7", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "cyan" } },
+    { key: "8", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "yellow" } },
+    { key: "9", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "magenta" } },
+    { key: "10", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "cyan" } },
+    { key: "11", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "yellow" } },
+    { key: "12", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "magenta" } },
+    { key: "13", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "cyan" } },
+  ])
   
+  const positions: MutableRefObject<Position[]> = useRef<Position[]>(
+    new Array(elements.current.length)
+  )
+
   const gridItems = useMemo(() => {
+    console.log(`passing through memo`)
 
-    const getItemWidth = (idx) => {
-      if (elements[idx])
-        return elements[idx].measure[1].width
-      return 0
-    }
-
-    const calculateLayout = (elements, marginTop, marginRight, marginBottom, marginLeft, containerWidth) => {
-      // let t0 = performance.now()
-      let currentRow = 0
-      let currentTopOffset = 0
-      let currentLeftOffset = 0
-      let spaceRemainingX = containerWidth
-      
-      const nextRow = () => {
-        currentRow += 1
-        currentTopOffset += marginTop + defaultItemHeight + marginBottom
-        currentLeftOffset = 0
-        spaceRemainingX = containerWidth
+    calculateLayout(
+      elements.current,
+      defaultMarginTop,
+      defaultMarginRight,
+      defaultMarginBottom,
+      defaultMarginLeft,
+      contentWidth
+    ).forEach((e,i) => {
+      positions.current[i] = {
+        ...positions.current[i],
+        ...e
       }
-      
-      elements.forEach((e, i) => {
-        const necessarySpaceX = marginLeft + getItemWidth(i) + marginRight
-        if (
-          spaceRemainingX <= necessarySpaceX && 
-          containerWidth > necessarySpaceX
-        ){
-          nextRow()
-        }
-        newPositions.current[i] = 
-          { row: currentRow, top: currentTopOffset + marginTop, left: currentLeftOffset + marginLeft }
-        spaceRemainingX -= necessarySpaceX
-        currentLeftOffset += necessarySpaceX
-      })
-      // let t1 = performance.now()
-      // console.log(`Call to calculateLayout took ${t1 - t0} milliseconds.`)
-    }
-
-    calculateLayout(elements, defaultMarginTop, defaultMarginRight, defaultMarginBottom, defaultMarginLeft, contentWidth)
+    })
     
-    let gridItemsCalcs = elements.map((item, i) => {
-
-      const xy = [
-        newPositions.current[i].top,
-        newPositions.current[i].left
-      ]
-
-      item.width = clicked.includes(item.key) ? defaultItemWidth*2 : defaultItemWidth
-      return {...item, xy, w: item.width}
+    let gridItemsCalcs = elements.current.map((item, i) => {
+      return {
+        ...item,
+        top: positions.current[i].top,
+        left: positions.current[i].left,
+        width: item.width
+      }
     })
     return gridItemsCalcs
-  }, [contentWidth, elements, clicked])
+    // FIXME - Mutating the reference elements.current does not trigger the Memo
+    // I need to find the way around triggering this with a clicked flag.
+  }, [contentWidth, clicked])
 
 
 
   const transitions = useTransition(gridItems, el => el.key, {
-    from: ({xy, w}) => ({xy, w, opacity: 0}),
-    enter: ({xy, w}) => ({xy, w, opacity: .5}),
-    update: ({xy, w}) => ({xy, w}),
-    config: { mass: 5, tension: 500, friction: 200 },
+    from: ({top, left, width}) => ({top, left, width, opacity: 0}),
+    enter: ({top, left, width}) => ({top, left, width, opacity: .5}),
+    update: ({top, left, width}) => ({top, left, width, opacity: .5}),
+    // config: { mass: 5, tension: 500, friction: 200 },
   })
 
   return (
@@ -127,31 +113,27 @@ export default function Grid() {
         key={1}
       >
         {transitions.map((el) => {
-            const {item, props: { xy, w, ...rest }, key} = el;
+            const {item, props: { top, left, width, ...rest }} = el;
             return (
             <animated.div
               key={item.key}
               className={style.gridItem}
               style={{
-                width: w,
+                width,
                 height: defaultItemHeight,
                 // transform: xy.interpolate((x, y) => `translate3d(${y}px,${x}px, 0px)`),
-                top: xy.interpolate((x, y) => `${x}px`),
-                left: xy.interpolate((x, y) => `${y}px`),
+                top: top?.interpolate(top => `${top}px`),
+                left: left?.interpolate(left => `${left}px`),
                 ...rest
               }}
-              ref={item.measure[0]}
               onClick={() => {
-                if (clicked.includes(item.key)){
-                  setClicked(clicked.filter(e => e !== item.key))
-                }else{
-                  setClicked([...clicked, item.key])
-                }
+                toggleItemWidth(item.key);
+                setClicked(!clicked)
               }}
             >
               <animated.div style={{
+                ...item.style,
                 display: "flex", flexDirection: "column", justifyContent: "center",
-                backgroundColor: item.bgcolor,
                 opacity: 0.7,
                 height: "inherit",
               }}>
@@ -160,8 +142,14 @@ export default function Grid() {
             </animated.div>)
           })}
       </animated.div>
+      <animated.button onClick={() => toggleContentWidth(2/3)} >
+        {'2/3'}
+      </animated.button>
       <animated.button onClick={() => toggleContentWidth(1/2)} >
         {'1/2'}
+      </animated.button>
+      <animated.button onClick={() => toggleContentWidth(1.5)} >
+        {'x1.5'}
       </animated.button>
       <animated.button onClick={() => toggleContentWidth(2)} >
         {'x2'}
@@ -176,28 +164,49 @@ export default function Grid() {
       <div style={{display: "flex", flexDirection: "row"}}>
         <div style={{marginRight: 100}}>
           New calc - containerWidth: {contentWidth}
-            <table>
-                <thead>
-                  <tr>
-                    <th>el</th>
-                    <th>row</th>
-                    {/* <th>leftRaw</th> */}
-                    <th>top</th>
-                    <th>left</th>
-                  </tr>
-                </thead>
-                <tbody>
-                {newPositions.current.map(({row, top, left}, i) =>
-                  <tr key={i}>
-                    <td>{elements[i].key}</td>
-                    <td>{row}</td>
-                    {/* <td>{leftRaw}</td> */}
-                    <td>{top}</td>
-                    <td>{left}</td>
-                  </tr>
-                )}
-                </tbody>
-            </table>
+          <table>
+              <thead>
+                <tr>
+                  <th>el</th>
+                  <th>row</th>
+                  {/* <th>leftRaw</th> */}
+                  <th>top</th>
+                  <th>left</th>
+                </tr>
+              </thead>
+              <tbody>
+              {positions.current.map(({row, top, left}, i) =>
+                <tr key={i}>
+                  <td>{elements.current[i].key}</td>
+                  <td>{row}</td>
+                  {/* <td>{leftRaw}</td> */}
+                  <td>{top}</td>
+                  <td>{left}</td>
+                </tr>
+              )}
+              </tbody>
+          </table>
+        </div>
+        <div style={{marginRight: 100}}>
+          elements
+          <table>
+              <thead>
+                <tr>
+                  <th>el</th>
+                  <th>width</th>
+                  <th>style</th>
+                </tr>
+              </thead>
+              <tbody>
+              {elements.current.map(({key, width, style}, i) =>
+                <tr key={i}>
+                  <td>{key}</td>
+                  <td>{width}</td>
+                  <td>{JSON.stringify(style)}</td>
+                </tr>
+              )}
+              </tbody>
+          </table>
         </div>
       </div>
     </div>
