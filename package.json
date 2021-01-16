@@ -5,6 +5,10 @@
   "keywords": [],
   "main": "src/index.js",
   "dependencies": {
+    "@types/jest": "^26.0.20",
+    "@types/node": "^14.14.21",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
     "react": "17.0.0",
     "react-dom": "17.0.0",
     "react-scripts": "3.4.3",
@@ -14,7 +18,7 @@
     "styled-components": "5.2.1"
   },
   "devDependencies": {
-    "typescript": "3.8.3"
+    "typescript": "^3.8.3"
   },
   "scripts": {
     "start": "react-scripts start",
