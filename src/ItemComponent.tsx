@@ -51,7 +51,7 @@ export default function ItemComponent(props: any) {
 
   return (
     <div
-      className={style.gridItem}
+      // className={style.gridItem}
       style={{...defaultStyle, ...props.style}}
       // onClick={() => {
       //   toggleItemWidth(item.key);

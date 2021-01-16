@@ -54,21 +54,27 @@ export default function GridComponent(props: any) {
 
   const [clicked, setClicked] = useState(false)
 
-  const elements: MutableRefObject<Item[]> = useRef<Item[]>([
-    { key: "1", width: defaultItemWidth, style: { backgroundColor: "cyan" } }, 
-    { key: "2", width: defaultItemWidth, style: { backgroundColor: "yellow" } }, 
-    { key: "3", width: defaultItemWidth, style: { backgroundColor: "magenta" } }, 
-    { key: "4", width: defaultItemWidth, style: { backgroundColor: "cyan" } }, 
-    { key: "5", width: defaultItemWidth, style: { backgroundColor: "yellow" } }, 
-    { key: "6", width: defaultItemWidth, style: { backgroundColor: "magenta" } }, 
-    { key: "7", width: defaultItemWidth, style: { backgroundColor: "cyan" } },
-    { key: "8", width: defaultItemWidth, style: { backgroundColor: "yellow" } },
-    { key: "9", width: defaultItemWidth, style: { backgroundColor: "magenta" } },
-    { key: "10", width: defaultItemWidth, style: { backgroundColor: "cyan" } },
-    { key: "11", width: defaultItemWidth, style: { backgroundColor: "yellow" } },
-    { key: "12", width: defaultItemWidth, style: { backgroundColor: "magenta" } },
-    { key: "13", width: defaultItemWidth, style: { backgroundColor: "cyan" } },
-  ])
+  const elements: MutableRefObject<Item[]> = useRef<Item[]>(
+    props.children.map((e: any,i: number) => ({
+      key: i,
+      width: defaultItemWidth
+    }))
+  )
+  // const elements: MutableRefObject<Item[]> = useRef<Item[]>([
+  //   { key: "1", width: defaultItemWidth, style: { backgroundColor: "cyan" } }, 
+  //   { key: "2", width: defaultItemWidth, style: { backgroundColor: "yellow" } }, 
+  //   { key: "3", width: defaultItemWidth, style: { backgroundColor: "magenta" } }, 
+  //   { key: "4", width: defaultItemWidth, style: { backgroundColor: "cyan" } }, 
+  //   { key: "5", width: defaultItemWidth, style: { backgroundColor: "yellow" } }, 
+  //   { key: "6", width: defaultItemWidth, style: { backgroundColor: "magenta" } }, 
+  //   { key: "7", width: defaultItemWidth, style: { backgroundColor: "cyan" } },
+  //   { key: "8", width: defaultItemWidth, style: { backgroundColor: "yellow" } },
+  //   { key: "9", width: defaultItemWidth, style: { backgroundColor: "magenta" } },
+  //   { key: "10", width: defaultItemWidth, style: { backgroundColor: "cyan" } },
+  //   { key: "11", width: defaultItemWidth, style: { backgroundColor: "yellow" } },
+  //   { key: "12", width: defaultItemWidth, style: { backgroundColor: "magenta" } },
+  //   { key: "13", width: defaultItemWidth, style: { backgroundColor: "cyan" } },
+  // ])
   
   const positions: MutableRefObject<Position[]> = useRef<Position[]>(
     new Array(elements.current.length)
