@@ -34,8 +34,12 @@ export const calculateLayout = (
   elements.forEach((e, i) => {
     const necessarySpaceX = marginLeft + e.width + marginRight
     if (
-      spaceRemainingX <= necessarySpaceX && 
-      containerWidth > necessarySpaceX
+      // FIXME -- There is a weird behavior because of bigger boxes than the
+      // container width. which makes the grid behave weirdly. Maybe if boxes 
+      // are wider than container width we always need to jump line.
+      (spaceRemainingX <= necessarySpaceX && 
+      containerWidth > necessarySpaceX) || 
+      (necessarySpaceX >= containerWidth && i !== 0)
     ){
       nextRow()
     }
