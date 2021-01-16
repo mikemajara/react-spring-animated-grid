@@ -1,11 +1,19 @@
-import React, { useState, useRef, useMemo, MutableRefObject } from "react";
+import React, { useState, useRef, useMemo, MutableRefObject, ReactPropTypes, PropsWithChildren, Component, Children } from "react";
 // import { useMeasure } from "react-use";
 import { animated, useTransition } from "react-spring";
 import style from "./grid.module.css";
-import { calculateLayout, defaultItemWidth } from "./helpers";
+import {
+  calculateLayout,
+  defaultItemWidth,
+  defaultMarginTop,
+  defaultMarginRight,
+  defaultMarginBottom,
+  defaultMarginLeft,
+  defaultItemHeight,
+} from "./helpers";
 import { Item, Position } from "./main";
 
-export default function Grid() {
+export default function GridComponent(props: any) {
 
   const containerWidth = 220;
   const containerHeight = 320;
@@ -47,19 +55,19 @@ export default function Grid() {
   const [clicked, setClicked] = useState(false)
 
   const elements: MutableRefObject<Item[]> = useRef<Item[]>([
-    { key: "1", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "cyan" } }, 
-    { key: "2", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "yellow" } }, 
-    { key: "3", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "magenta" } }, 
-    { key: "4", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "cyan" } }, 
-    { key: "5", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "yellow" } }, 
-    { key: "6", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "magenta" } }, 
-    { key: "7", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "cyan" } },
-    { key: "8", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "yellow" } },
-    { key: "9", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "magenta" } },
-    { key: "10", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "cyan" } },
-    { key: "11", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "yellow" } },
-    { key: "12", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "magenta" } },
-    { key: "13", /*measure: useMeasure() ,*/ width: defaultItemWidth, style: { backgroundColor: "cyan" } },
+    { key: "1", width: defaultItemWidth, style: { backgroundColor: "cyan" } }, 
+    { key: "2", width: defaultItemWidth, style: { backgroundColor: "yellow" } }, 
+    { key: "3", width: defaultItemWidth, style: { backgroundColor: "magenta" } }, 
+    { key: "4", width: defaultItemWidth, style: { backgroundColor: "cyan" } }, 
+    { key: "5", width: defaultItemWidth, style: { backgroundColor: "yellow" } }, 
+    { key: "6", width: defaultItemWidth, style: { backgroundColor: "magenta" } }, 
+    { key: "7", width: defaultItemWidth, style: { backgroundColor: "cyan" } },
+    { key: "8", width: defaultItemWidth, style: { backgroundColor: "yellow" } },
+    { key: "9", width: defaultItemWidth, style: { backgroundColor: "magenta" } },
+    { key: "10", width: defaultItemWidth, style: { backgroundColor: "cyan" } },
+    { key: "11", width: defaultItemWidth, style: { backgroundColor: "yellow" } },
+    { key: "12", width: defaultItemWidth, style: { backgroundColor: "magenta" } },
+    { key: "13", width: defaultItemWidth, style: { backgroundColor: "cyan" } },
   ])
   
   const positions: MutableRefObject<Position[]> = useRef<Position[]>(
@@ -112,7 +120,8 @@ export default function Grid() {
         style={{width: contentWidth, height: containerHeight}}
         key={1}
       >
-        {transitions.map((el) => {
+        { props.children?.length &&
+          transitions.map((el,i) => {
             const {item, props: { top, left, width, ...rest }} = el;
             return (
             <animated.div
@@ -131,14 +140,15 @@ export default function Grid() {
                 setClicked(!clicked)
               }}
             >
-              <animated.div style={{
+              {props.children[i]}
+              {/* <animated.div style={{
                 ...item.style,
                 display: "flex", flexDirection: "column", justifyContent: "center",
                 opacity: 0.7,
                 height: "inherit",
               }}>
                 {item.key}
-              </animated.div>
+              </animated.div> */}
             </animated.div>)
           })}
       </animated.div>

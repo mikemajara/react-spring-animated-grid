@@ -12,9 +12,5 @@ declare class Item {
   key: string;
   width: number;
   height?: number;
-  // measure: UseMeasureResult
-  // bgColor?: string;
   style?: CSSProperties;
 }
-
-// { key: "1", bgcolor: "cyan", measure: useMeasure() }, 

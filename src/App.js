@@ -1,10 +1,28 @@
 import React from "react";
-import Grid from './Grid'
+import Grid from './GridComponent'
+import Item from './ItemComponent'
 
 export default function App() {  
   return (
     <div>
-      <Grid/>
+      <Grid>
+        <Item
+          style={{
+            width: 40,
+            height: 40,
+          }}
+        >
+          hola
+        </Item>
+        <Item
+          style={{
+            width: 40,
+            height: 40,
+          }}
+        >
+          hola
+        </Item>
+      </Grid>
     </div>
   );
 }
