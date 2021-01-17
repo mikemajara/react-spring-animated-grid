@@ -8,7 +8,7 @@ import React, {
   CSSProperties,
 } from "react";
 // import { useMeasure } from "react-use";
-import { animated, useTransition } from "react-spring";
+import { animated, AnimatedValue, useTransition } from "react-spring";
 import { useMeasure } from "react-use";
 import { calculateLayout } from './helpers'
 import {
@@ -21,28 +21,54 @@ import {
 } from "./defaults";
 import { Position } from "./main";
 
-export interface GridProps extends PropsWithChildren<ReactElement>{
-  width: number; height: number;
+
+export interface RequiredStyleFields extends CSSProperties {
+  // width: number
+  // height: number
+}
+
+export interface GridProps{
+  // width: number; height: number;
   children: ReactElement[],
-  style?: CSSProperties,
+  style: RequiredStyleFields,
   itemMarginTop?: number,
   itemMarginRight?: number,
   itemMarginBottom?: number,
   itemMarginLeft?: number,
 }
 
-export function GridComponent(props: GridProps): ReactElement {
+export function GridComponent(props: GridProps) {
   
   const { 
-    style,
-    width: containerWidth,
-    height: containerHeight,
+    // style: {
+    //   width: containerWidthRaw,
+    //   height: containerHeightRaw
+    // },
+    style: containerStyle,
     children,
     itemMarginTop = defaultMarginTop,
     itemMarginRight = defaultMarginRight,
     itemMarginBottom = defaultMarginBottom,
     itemMarginLeft = defaultMarginLeft,
   } = props
+
+  const [containerRefMeasure, {width: containerWidth, height: containerHeight}] = useMeasure<HTMLDivElement>()
+
+  // if (!containerWidthRaw || !containerHeightRaw) {
+  //   throw Error(
+  //     "Grid container width or height are not defined. Please ensure that these are defined values in the style prop"
+  //   );
+  // }
+
+  // if (typeof containerWidthRaw !== "number") {
+  //   if (typeof containerWidthRaw === "object") {
+  //     containerWidth = containerWidthRaw
+  //   } else {
+  //     throw Error(
+  //       `${JSON.stringify(containerWidthRaw)} Grid container width is a ${typeof containerWidth} instead of number. Please ensure the width is of type number`
+  //     )
+  //   }
+  // }
 
   const positions: MutableRefObject<Position[]> = useRef<Position[]>(
     new Array(children.length)
@@ -104,42 +130,43 @@ export function GridComponent(props: GridProps): ReactElement {
   })
 
   return (
-    <div>
-      <animated.div
-        style={{
-          ...props.style,
-          position: "relative",
-          width: containerWidth,
-          height: containerHeight,
-        }}
-        key={1}
-      >
-        { children?.length &&
-          transitions.map((el,i) => {
-            const {item, props: { top, left, width, ...rest }} = el;
-            return (
-            <animated.div
-              key={item.key}
-              style={{
-                position: "absolute",
-                width,
-                height: refMeasures[i].height,
-                top: top?.interpolate(top => `${top}px`),
-                left: left?.interpolate(left => `${left}px`),
-                ...rest
-              }}
-            >
-              {
-                React.cloneElement(
-                  children[i],
-                  {
-                    ref: refMeasures[i].size
-                  }
-                )
-              }
-            </animated.div>)
-          })}
-      </animated.div>
-    </div>
+    // <div ref={containerRefMeasure}>
+    <animated.div
+      style={{
+        ...containerStyle,
+        position: "relative",
+        // width: containerWidth,
+        // height: containerHeight,
+      }}
+      key={1}
+      ref={containerRefMeasure}
+    >
+      { children?.length &&
+        transitions.map((el,i) => {
+          const {item, props: { top, left, width, ...rest }} = el;
+          return (
+          <animated.div
+            key={item.key}
+            style={{
+              position: "absolute",
+              width,
+              height: refMeasures[i].height,
+              top: top?.interpolate(top => `${top}px`),
+              left: left?.interpolate(left => `${left}px`),
+              ...rest
+            }}
+          >
+            {
+              React.cloneElement(
+                children[i],
+                {
+                  ref: refMeasures[i].size
+                }
+              )
+            }
+          </animated.div>)
+        })}
+    </animated.div>
+    // </div>
   );
 }

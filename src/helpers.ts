@@ -16,8 +16,13 @@ export const calculateLayout = (
   marginRight: number,
   marginBottom: number,
   marginLeft: number,
-  containerWidth: number
+  containerWidthRaw: number | string
 ): Position[] => {
+
+  const containerWidth = typeof containerWidthRaw === "string"
+   ? parseInt(containerWidthRaw.replace(/[a-z]+$/, ''))
+   : containerWidthRaw
+
   // let t0 = performance.now()
   let currentRow = 0
   let currentTopOffset = 0
