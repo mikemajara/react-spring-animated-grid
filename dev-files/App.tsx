@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import Grid from './GridComponent'
-import {defaultItemWidth} from './defaults'
+import Grid from '../src/GridComponent'
+import { defaultItemWidth } from '../src/defaults'
 import { animated, useSpring, useTransition } from 'react-spring'
 
 export default function App() {  
@@ -27,14 +27,14 @@ export default function App() {
   }
 
   const elements = [
-    { key: "a", width: useState(40)},
-    { key: "b", width: useState(40)},
-    { key: "c", width: useState(40)},
-    { key: "d", width: useState(40)},
-    { key: "e", width: useState(40)},
-    { key: "f", width: useState(40)},
-    { key: "g", width: useState(40)},
-    { key: "h", width: useState(40)},
+    { key: "Miguel", width: useState(100)},
+    { key: "Alcalde", width: useState(100)},
+    // { key: "c", width: useState(40)},
+    // { key: "d", width: useState(40)},
+    // { key: "e", width: useState(40)},
+    // { key: "f", width: useState(40)},
+    // { key: "g", width: useState(40)},
+    // { key: "h", width: useState(40)},
   ]
 
   // const transitions = useTransition(elements, el => el.key, {

@@ -1,7 +1,8 @@
 import { CSSProperties } from "react";
 import { UseMeasureResult } from "react-use/lib/useMeasure";
 
-declare class Position {
+
+declare type Position = {
   row: number = 0;
   top: number = 0;
   left: number = 0;

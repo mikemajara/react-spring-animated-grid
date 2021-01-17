@@ -1,28 +1,54 @@
 {
-  "name": "hard-grid",
-  "version": "1.0.0",
-  "description": "",
-  "keywords": [],
-  "main": "src/index.js",
+  "name": "react-spring-animated-grid",
+  "version": "0.1.0",
+  "description": "width aware animated grid for react",
+  "license": "MIT",
+  "source": "src/index.ts",
+  "main": "dist/index.js",            
+  "umd:main": "dist/index.umd.js",    
+  "module": "dist/index.m.js",        
+  "esmodule": "dist/index.modern.js", 
+  "types": "dist/index.d.ts",         
+  "keywords": [
+    "react",
+    "react-spring",
+    "width",
+    "resize",
+    "grid"
+  ],
+  "homepage": "https://github.com/MikeMajara/react-spring-animated-grid",
+  "bugs": {
+    "url": "https://github.com/MikeMajara/react-spring-animated-grid/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MikeMajara/react-spring-animated-grid.git"
+  },
   "dependencies": {
+    "react-use": "15.3.8"
+  },
+  "peerDependencies": {
+    "react": "~17.0.0",
+    "react-dom": "~17.0.0",
+    "react-spring": "~8.0.27"
+  },
+  "devDependencies": {
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.21",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
-    "react": "17.0.0",
-    "react-dom": "17.0.0",
+    "microbundle": "^0.13.0",
+    "react": "~17.0.0",
+    "react-dom": "~17.0.0",
     "react-scripts": "3.4.3",
-    "react-spring": "8.0.27",
+    "react-spring": "~8.0.27",
     "react-use": "15.3.8",
-    "react-use-gesture": "8.0.0",
-    "styled-components": "5.2.1"
-  },
-  "devDependencies": {
     "typescript": "^3.8.3"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "microbundle --jsx React.createElement",
+    "dev": "microbundle watch --jsx React.createElement --no-compress",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },

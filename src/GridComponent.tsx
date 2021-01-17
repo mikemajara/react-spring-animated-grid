@@ -8,7 +8,6 @@ import React, {
 // import { useMeasure } from "react-use";
 import { animated, useTransition } from "react-spring";
 import { useMeasure } from "react-use";
-import style from "./grid.module.css";
 import { calculateLayout } from './helpers'
 import {
   defaultMarginTop,
@@ -20,7 +19,7 @@ import {
 } from "./defaults";
 import { Position } from "./main";
 
-export default function GridComponent(props: any): ReactElement {
+export function GridComponent(props: any): ReactElement {
   
   const { 
     style: { width: containerWidth },
@@ -91,7 +90,6 @@ export default function GridComponent(props: any): ReactElement {
   return (
     <div>
       <animated.div
-        className={style.gridContainer}
         style={{
           width: props.style.width,
           height: props.style.height
