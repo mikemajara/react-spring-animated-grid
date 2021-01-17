@@ -2,3 +2,4 @@
 *.mp4
 *.gif
 node_modules
+dist

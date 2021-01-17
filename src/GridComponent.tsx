@@ -4,6 +4,8 @@ import React, {
   useMemo,
   MutableRefObject,
   ReactElement,
+  PropsWithChildren,
+  CSSProperties,
 } from "react";
 // import { useMeasure } from "react-use";
 import { animated, useTransition } from "react-spring";
@@ -19,10 +21,22 @@ import {
 } from "./defaults";
 import { Position } from "./main";
 
-export function GridComponent(props: any): ReactElement {
+export interface GridProps extends PropsWithChildren<ReactElement>{
+  width: number; height: number;
+  children: ReactElement[],
+  style?: CSSProperties,
+  itemMarginTop?: number,
+  itemMarginRight?: number,
+  itemMarginBottom?: number,
+  itemMarginLeft?: number,
+}
+
+export function GridComponent(props: GridProps): ReactElement {
   
   const { 
-    style: { width: containerWidth },
+    style,
+    width: containerWidth,
+    height: containerHeight,
     children,
     itemMarginTop = defaultMarginTop,
     itemMarginRight = defaultMarginRight,
@@ -64,6 +78,8 @@ export function GridComponent(props: any): ReactElement {
       // console.log(`---- end log ----`)
       return {
         ...item,
+        // FIXME -- how to force key to be non null value.
+        key: item.key || 0,
         top: positions.current[i].top,
         left: positions.current[i].left,
         width: refMeasures[i].width
@@ -91,8 +107,10 @@ export function GridComponent(props: any): ReactElement {
     <div>
       <animated.div
         style={{
-          width: props.style.width,
-          height: props.style.height
+          ...props.style,
+          position: "relative",
+          width: containerWidth,
+          height: containerHeight,
         }}
         key={1}
       >
@@ -104,7 +122,6 @@ export function GridComponent(props: any): ReactElement {
               key={item.key}
               style={{
                 position: "absolute",
-                border: "1px solid black",
                 width,
                 height: refMeasures[i].height,
                 top: top?.interpolate(top => `${top}px`),
