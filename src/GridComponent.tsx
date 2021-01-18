@@ -64,6 +64,7 @@ export function GridComponent(props: GridProps) {
 
     calculateLayout(
       children,
+      refMeasures,
       itemMarginTop,
       itemMarginRight,
       itemMarginBottom,
@@ -110,7 +111,6 @@ export function GridComponent(props: GridProps) {
         ...containerStyle,
         position: "relative",
       }}
-      key={1}
       ref={containerRefMeasure}
     >
       { children?.length &&
@@ -121,7 +121,7 @@ export function GridComponent(props: GridProps) {
             key={item.key}
             style={{
               position: "absolute",
-              width,
+              // width,
               height: refMeasures[i].height,
               top: top?.interpolate(top => `${top}px`),
               left: left?.interpolate(left => `${left}px`),
