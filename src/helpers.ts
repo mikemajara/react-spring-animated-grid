@@ -12,7 +12,6 @@ import {
 
 export const calculateLayout = (
   elements: React.ReactElement[],
-  refMeasures: any[],
   marginTop: number,
   marginRight: number,
   marginBottom: number,
@@ -40,7 +39,7 @@ export const calculateLayout = (
   const positions: Position[] = []
   
   elements.forEach((e, i) => {
-    let elementWidth = refMeasures[i].width; //e.props.style.width
+    let elementWidth = e.props.style.width
     // FIX - If the elements' values are AnimatedValues,
     // we need to extract the actual width value from there.
     if (typeof elementWidth === "object") {elementWidth = elementWidth.value}
