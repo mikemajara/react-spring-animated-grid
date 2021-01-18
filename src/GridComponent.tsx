@@ -98,9 +98,9 @@ export function GridComponent(props: GridProps) {
 
 
   const transitions = useTransition(gridItems, el => el.key, {
-    from: ({top, left}) => ({top, left, opacity: 0}),
-    enter: ({top, left}) => ({top, left, opacity: .5}),
-    update: ({top, left}) => ({top, left, opacity: .5}),
+    from: ({ top, left }) => ({ top, left }),
+    enter: ({ top, left }) => ({ top, left }),
+    update: ({ top, left }) => ({ top, left }),
     // config: { mass: 5, tension: 500, friction: 200 },
   })
 
