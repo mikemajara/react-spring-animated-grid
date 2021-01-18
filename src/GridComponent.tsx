@@ -63,7 +63,8 @@ export function GridComponent(props: GridProps) {
   const gridItems = useMemo(() => {
 
     calculateLayout(
-      children,
+      children, // ReactElements
+      refMeasures,
       itemMarginTop,
       itemMarginRight,
       itemMarginBottom,
