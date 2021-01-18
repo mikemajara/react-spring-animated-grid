@@ -40,10 +40,6 @@ export interface GridProps{
 export function GridComponent(props: GridProps) {
   
   const { 
-    // style: {
-    //   width: containerWidthRaw,
-    //   height: containerHeightRaw
-    // },
     style: containerStyle,
     children,
     itemMarginTop = defaultMarginTop,
@@ -53,22 +49,6 @@ export function GridComponent(props: GridProps) {
   } = props
 
   const [containerRefMeasure, {width: containerWidth, height: containerHeight}] = useMeasure<HTMLDivElement>()
-
-  // if (!containerWidthRaw || !containerHeightRaw) {
-  //   throw Error(
-  //     "Grid container width or height are not defined. Please ensure that these are defined values in the style prop"
-  //   );
-  // }
-
-  // if (typeof containerWidthRaw !== "number") {
-  //   if (typeof containerWidthRaw === "object") {
-  //     containerWidth = containerWidthRaw
-  //   } else {
-  //     throw Error(
-  //       `${JSON.stringify(containerWidthRaw)} Grid container width is a ${typeof containerWidth} instead of number. Please ensure the width is of type number`
-  //     )
-  //   }
-  // }
 
   const positions: MutableRefObject<Position[]> = useRef<Position[]>(
     new Array(children.length)
@@ -97,11 +77,6 @@ export function GridComponent(props: GridProps) {
     })
     
     let gridItemsCalcs = children.map((item: ReactElement, i: number) => {
-      // console.log(`--- start log ---`)
-      // refMeasures.forEach((e: any, i: number) => {
-      //   console.log(`element ${children[i].key} width: ${e.width}`)
-      // })
-      // console.log(`---- end log ----`)
       return {
         ...item,
         // FIXME -- how to force key to be non null value.
@@ -130,13 +105,10 @@ export function GridComponent(props: GridProps) {
   })
 
   return (
-    // <div ref={containerRefMeasure}>
-    <animated.div
+    <div
       style={{
         ...containerStyle,
         position: "relative",
-        // width: containerWidth,
-        // height: containerHeight,
       }}
       key={1}
       ref={containerRefMeasure}
@@ -166,7 +138,6 @@ export function GridComponent(props: GridProps) {
             }
           </animated.div>)
         })}
-    </animated.div>
-    // </div>
+    </div>
   );
 }
