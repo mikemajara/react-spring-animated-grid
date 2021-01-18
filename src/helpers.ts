@@ -15,6 +15,7 @@ interface ReactNodeWithSize<T extends React.ReactNode>{
 
 export const calculateLayout = (
   elements: React.ReactElement[],
+  refMeasures: any[],
   marginTop: number,
   marginRight: number,
   marginBottom: number,
@@ -42,7 +43,8 @@ export const calculateLayout = (
   // })
 
   elements.forEach((e, i) => {
-    const elementWidth = e.props.style.width
+    // const elementWidth = e.props.style.width
+    const elementWidth = refMeasures[i].width // e.props.style.width
     const necessarySpaceX = marginLeft + elementWidth + marginRight
     if (
       // FIXME -- There is a weird behavior because of bigger boxes than the
