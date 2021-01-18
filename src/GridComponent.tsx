@@ -30,7 +30,7 @@ export interface RequiredStyleFields extends CSSProperties {
 export interface GridProps{
   // width: number; height: number;
   children: ReactElement[],
-  style: RequiredStyleFields,
+  style?: RequiredStyleFields,
   itemMarginTop?: number,
   itemMarginRight?: number,
   itemMarginBottom?: number,
@@ -56,7 +56,7 @@ export function GridComponent(props: GridProps) {
   const positions: MutableRefObject<Position[]> = useRef<Position[]>(
     new Array(children.length)
   )
-
+  
   const refMeasures = children.map(() => {
     console.log(`setting refMeasures`)
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -64,6 +64,12 @@ export function GridComponent(props: GridProps) {
     return {size, width, height}
   })
   
+  console.log(`containerWidth`)
+  console.log(containerWidth)
+  console.log(`containerHeight`)
+  console.log(containerHeight)
+
+
   const gridItems = useMemo(() => {
     calculateLayout(
       children,
@@ -96,8 +102,8 @@ export function GridComponent(props: GridProps) {
     // dependencies: container's width, 
     // and size of each contained element
     containerWidth,
-    refMeasures.map((e:any) => e.width),
-    refMeasures.map((e:any) => e.height),
+    refMeasures,//.map((e:any) => e.width),
+    // refMeasures.map((e:any) => e.height),
     clicked
   ])
 
@@ -127,7 +133,6 @@ export function GridComponent(props: GridProps) {
             key={item.key}
             style={{
               position: "absolute",
-              width,
               height: refMeasures[i].height,
               top: top?.interpolate(top => `${top}px`),
               left: left?.interpolate(left => `${left}px`),

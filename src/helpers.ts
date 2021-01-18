@@ -47,7 +47,7 @@ export const calculateLayout = (
     let elementWidth = refMeasures[i].width// e.props.style.width
     // FIX - If the elements' values are AnimatedValues,
     // we need to extract the actual width value from there.
-    if (typeof elementWidth === "object") {elementWidth = elementWidth.value}
+    // if (typeof elementWidth === "object") {elementWidth = elementWidth.value}
 
     const necessarySpaceX = marginLeft + elementWidth + marginRight
     if (
