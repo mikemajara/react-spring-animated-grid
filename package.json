@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "description": "width aware animated grid for react",
   "license": "MIT",
+  "author": "Miguel Alcalde",
   "source": "src/index.ts",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": ["dist/"],
   "keywords": [
     "react",
     "react-spring",
