@@ -57,38 +57,17 @@ export function GridComponent(props: GridProps) {
     new Array(children.length)
   )
 
-  const refMeasures = useRef<any[]>(children.map(() => {
+  const refMeasures = children.map(() => {
     console.log(`setting refMeasures`)
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const [size, {width, height}] = useMeasure()
     return {size, width, height}
-  }))
-
-  const childrenWithRef = useRef<ReactElement[]>(
-  // React.useEffect(() => {
-    children.map((e, i) => {
-      console.log(`cloning element ${e.key}`)
-      return React.cloneElement(
-        children[i],
-        {
-          ref: refMeasures.current[i].size
-        }
-      )
-    })
-  )
-  // }, [])
+  })
   
-  console.log(`children`)
-  console.log(children)
-
-
   const gridItems = useMemo(() => {
-    console.log(`childrenWithRef`)
-    console.log(childrenWithRef)
     calculateLayout(
-      // childrenWithRef.current,
       children,
-      refMeasures.current,
+      refMeasures,
       itemMarginTop,
       itemMarginRight,
       itemMarginBottom,
@@ -109,7 +88,7 @@ export function GridComponent(props: GridProps) {
         key: item.key || 0,
         top: positions.current[i].top,
         left: positions.current[i].left,
-        width: refMeasures.current[i].width
+        width: refMeasures[i].width
       }
     })
     return gridItemsCalcs
@@ -117,8 +96,8 @@ export function GridComponent(props: GridProps) {
     // dependencies: container's width, 
     // and size of each contained element
     containerWidth,
-    refMeasures.current.map((e:any) => e.width),
-    refMeasures.current.map((e:any) => e.height),
+    refMeasures.map((e:any) => e.width),
+    refMeasures.map((e:any) => e.height),
     clicked
   ])
 
@@ -149,7 +128,7 @@ export function GridComponent(props: GridProps) {
             style={{
               position: "absolute",
               width,
-              height: refMeasures.current[i].height,
+              height: refMeasures[i].height,
               top: top?.interpolate(top => `${top}px`),
               left: left?.interpolate(left => `${left}px`),
               ...rest
@@ -160,18 +139,18 @@ export function GridComponent(props: GridProps) {
               React.cloneElement(
                 children[i],
                 {
-                  ref: refMeasures.current[i].size
+                  ref: refMeasures[i].size
                 }
               )
             }
           </animated.div>)
         })}
-        <button 
+        {/* <button 
           onClick={toggleClicked}
           style={{top: 100, left: 300, position: "absolute"}}
         >
           clicked
-        </button>
+        </button> */}
     </div>
   );
 }

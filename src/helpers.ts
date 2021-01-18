@@ -43,10 +43,8 @@ export const calculateLayout = (
   console.log(`refMeasures`)
   console.log(refMeasures)
   elements.forEach((e, i) => {
-    let elementWidth = e.props.style.width || 0
-    let elementWidthFromRef = refMeasures[i].width// e.props.style.width
-    console.log(`element ${e.key} styleWidth: ${elementWidth}`)
-    console.log(`element ${e.key} refWidth: ${elementWidthFromRef}`)
+    // let elementWidth = e.props.style.width || 0
+    let elementWidth = refMeasures[i].width// e.props.style.width
     // FIX - If the elements' values are AnimatedValues,
     // we need to extract the actual width value from there.
     if (typeof elementWidth === "object") {elementWidth = elementWidth.value}
