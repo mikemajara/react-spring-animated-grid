@@ -8,7 +8,7 @@ Animated grid responsive to width changes.
 
 # Install
 
-to-do
+`npm i react-spring-animated-grid`
 # Usage
 
 ```
