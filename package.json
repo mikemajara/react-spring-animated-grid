@@ -1,13 +1,15 @@
 {
   "name": "react-spring-animated-grid",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "width aware animated grid for react",
   "license": "MIT",
   "author": "Miguel Alcalde",
   "source": "src/index.ts",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist/"],
+  "files": [
+    "dist/"
+  ],
   "keywords": [
     "react",
     "react-spring",

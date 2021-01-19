@@ -21,16 +21,9 @@ import {
 } from "./defaults";
 import { Position } from "./main";
 
-
-export interface RequiredStyleFields extends CSSProperties {
-  // width: number
-  // height: number
-}
-
 export interface GridProps{
-  // width: number; height: number;
   children: ReactElement[],
-  style: RequiredStyleFields,
+  style?: CSSProperties,
   itemMarginTop?: number,
   itemMarginRight?: number,
   itemMarginBottom?: number,
@@ -49,21 +42,21 @@ export function GridComponent(props: GridProps) {
   } = props
 
   const [containerRefMeasure, {width: containerWidth, height: containerHeight}] = useMeasure<HTMLDivElement>()
-
+  
   const positions: MutableRefObject<Position[]> = useRef<Position[]>(
     new Array(children.length)
   )
-
+  
   const refMeasures = children.map(() => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const [size, {width, height}] = useMeasure()
     return {size, width, height}
   })
-
+  
   const gridItems = useMemo(() => {
-
     calculateLayout(
       children,
+      refMeasures,
       itemMarginTop,
       itemMarginRight,
       itemMarginBottom,
@@ -75,7 +68,6 @@ export function GridComponent(props: GridProps) {
         ...e
       }
     })
-    
     let gridItemsCalcs = children.map((item: ReactElement, i: number) => {
       return {
         ...item,
@@ -91,8 +83,7 @@ export function GridComponent(props: GridProps) {
     // dependencies: container's width, 
     // and size of each contained element
     containerWidth,
-    refMeasures.map((e:any) => e.width),
-    refMeasures.map((e:any) => e.height)
+    refMeasures,
   ])
 
 
@@ -101,6 +92,8 @@ export function GridComponent(props: GridProps) {
     from: ({ top, left }) => ({ top, left }),
     enter: ({ top, left }) => ({ top, left }),
     update: ({ top, left }) => ({ top, left }),
+    // TODO -- Include spring config 
+    // see https://github.com/MikeMajara/react-spring-animated-grid/issues/2
     // config: { mass: 5, tension: 500, friction: 200 },
   })
 
@@ -110,7 +103,6 @@ export function GridComponent(props: GridProps) {
         ...containerStyle,
         position: "relative",
       }}
-      key={1}
       ref={containerRefMeasure}
     >
       { children?.length &&
@@ -121,7 +113,6 @@ export function GridComponent(props: GridProps) {
             key={item.key}
             style={{
               position: "absolute",
-              width,
               height: refMeasures[i].height,
               top: top?.interpolate(top => `${top}px`),
               left: left?.interpolate(left => `${left}px`),
