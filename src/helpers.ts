@@ -17,12 +17,13 @@ export const calculateLayout = (
   marginRight: number,
   marginBottom: number,
   marginLeft: number,
-  containerWidthRaw: number | string
+  containerWidth: number,
 ): Position[] => {
 
-  const containerWidth = typeof containerWidthRaw === "string"
-   ? parseInt(containerWidthRaw.replace(/[a-z]+$/, ''))
-   : containerWidthRaw
+  // TODO -- what is the units policy gonna be? as of know this should not work.
+  // const containerWidth = typeof containerWidthRaw === "string"
+  //  ? parseInt(containerWidthRaw.replace(/[a-z]+$/, ''))
+  //  : containerWidthRaw
 
   // let t0 = performance.now()
   let currentRow = 0
@@ -38,22 +39,11 @@ export const calculateLayout = (
   }
 
   const positions: Position[] = []
-  console.log(`elements`)
-  console.log(elements)
-  console.log(`refMeasures`)
-  console.log(refMeasures)
   elements.forEach((e, i) => {
-    // let elementWidth = e.props.style.width || 0
-    let elementWidth = refMeasures[i].width// e.props.style.width
-    // FIX - If the elements' values are AnimatedValues,
-    // we need to extract the actual width value from there.
-    // if (typeof elementWidth === "object") {elementWidth = elementWidth.value}
+    let elementWidth = refMeasures[i].width
 
     const necessarySpaceX = marginLeft + elementWidth + marginRight
     if (
-      // FIXME -- There is a weird behavior because of bigger boxes than the
-      // container width. which makes the grid behave weirdly. Maybe if boxes 
-      // are wider than container width we always need to jump line.
       (spaceRemainingX <= necessarySpaceX && 
       containerWidth > necessarySpaceX) || 
       (necessarySpaceX >= containerWidth && i !== 0)

@@ -21,16 +21,9 @@ import {
 } from "./defaults";
 import { Position } from "./main";
 
-
-export interface RequiredStyleFields extends CSSProperties {
-  // width: number
-  // height: number
-}
-
 export interface GridProps{
-  // width: number; height: number;
   children: ReactElement[],
-  style?: RequiredStyleFields,
+  style?: CSSProperties,
   itemMarginTop?: number,
   itemMarginRight?: number,
   itemMarginBottom?: number,
@@ -50,26 +43,16 @@ export function GridComponent(props: GridProps) {
 
   const [containerRefMeasure, {width: containerWidth, height: containerHeight}] = useMeasure<HTMLDivElement>()
   
-  const [clicked, setClicked] = useState(false)
-  const toggleClicked = () => { setClicked(!clicked) }
-
   const positions: MutableRefObject<Position[]> = useRef<Position[]>(
     new Array(children.length)
   )
   
   const refMeasures = children.map(() => {
-    console.log(`setting refMeasures`)
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const [size, {width, height}] = useMeasure()
     return {size, width, height}
   })
   
-  console.log(`containerWidth`)
-  console.log(containerWidth)
-  console.log(`containerHeight`)
-  console.log(containerHeight)
-
-
   const gridItems = useMemo(() => {
     calculateLayout(
       children,
@@ -85,8 +68,6 @@ export function GridComponent(props: GridProps) {
         ...e
       }
     })
-    console.log(`positions`)
-    console.log(positions.current)
     let gridItemsCalcs = children.map((item: ReactElement, i: number) => {
       return {
         ...item,
@@ -102,9 +83,7 @@ export function GridComponent(props: GridProps) {
     // dependencies: container's width, 
     // and size of each contained element
     containerWidth,
-    refMeasures,//.map((e:any) => e.width),
-    // refMeasures.map((e:any) => e.height),
-    clicked
+    refMeasures,
   ])
 
 
@@ -113,6 +92,8 @@ export function GridComponent(props: GridProps) {
     from: ({ top, left }) => ({ top, left }),
     enter: ({ top, left }) => ({ top, left }),
     update: ({ top, left }) => ({ top, left }),
+    // TODO -- Include spring config 
+    // see https://github.com/MikeMajara/react-spring-animated-grid/issues/2
     // config: { mass: 5, tension: 500, friction: 200 },
   })
 
@@ -123,7 +104,6 @@ export function GridComponent(props: GridProps) {
         position: "relative",
       }}
       ref={containerRefMeasure}
-      // onClick={() => clicked.current = !clicked.current}
     >
       { children?.length &&
         transitions.map((el,i) => {
@@ -139,7 +119,6 @@ export function GridComponent(props: GridProps) {
               ...rest
             }}
           >
-            {/* {childrenWithRef.current[i]} */}
             {
               React.cloneElement(
                 children[i],
@@ -150,12 +129,6 @@ export function GridComponent(props: GridProps) {
             }
           </animated.div>)
         })}
-        {/* <button 
-          onClick={toggleClicked}
-          style={{top: 100, left: 300, position: "absolute"}}
-        >
-          clicked
-        </button> */}
     </div>
   );
 }
