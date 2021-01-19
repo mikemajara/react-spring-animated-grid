@@ -1,5 +1,6 @@
 *.mov
 *.mp4
 *.gif
+!media/animated-grid-demo.gif
 node_modules
 dist
