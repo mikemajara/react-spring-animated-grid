@@ -30,7 +30,7 @@ import { GridComponent } from 'react-spring-animated-grid'
 </GridComponent>
 
 ```
-# Sandbox
+# Demo
 
 https://codesandbox.io/s/animated-grid-demo-ycu8x?file=/src/App.js:793-814
  
